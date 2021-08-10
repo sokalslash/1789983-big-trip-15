@@ -6,9 +6,9 @@ const createOfferListItemTemplete = (offer) => (`<li class="event__offer">
   <span class="event__offer-price">${offer.price}</span>
 </li>`);
 
-const createOffersContainer = (arrayOffers) => {
-  if (arrayOffers && arrayOffers.length !== 0) {
-    const offersList = arrayOffers.map((offer) => createOfferListItemTemplete(offer)).join('');
+const createOffersContainer = (offers) => {
+  if (offers && offers.length !== 0) {
+    const offersList = offers.map((offer) => createOfferListItemTemplete(offer)).join('');
     return   `<h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">${offersList}</ul>`;
   }
@@ -22,9 +22,9 @@ const isFavorite = (flag) => {
   return '';
 };
 
-export const createTripEventTemplate = (dataMock) => {
-  if (dataMock && dataMock.length !== 0) {
-    const {dateFrom, dateTo, dateDifference, type, destination, basePrice, offers, favorite} = dataMock;
+export const createTripEventTemplate = (eventData) => {
+  if (eventData && eventData.length !== 0) {
+    const {dateFrom, dateTo, dateDifference, type, destination, basePrice, offers, favorite} = eventData;
     const dateForStart = humanizeDateForEventAndInfo(dateFrom);
     const dateForAttributeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForAttributeTimeStart = humanizeDateForAttributeEvent(dateFrom);

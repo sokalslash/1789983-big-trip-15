@@ -20,9 +20,9 @@ const createOfferCheckbox = (offer) => (`<div class="event__available-offers">
        </label>
      </div>`);
 
-const createEventSectionOffers = (arrayOffers) => {
-  if (arrayOffers && arrayOffers.length !== 0) {
-    const availableOffers = arrayOffers.map((offer) => createOfferCheckbox(offer)).join(' ');
+const createEventSectionOffers = (offers) => {
+  if (offers && offers.length !== 0) {
+    const availableOffers = offers.map((offer) => createOfferCheckbox(offer)).join(' ');
     return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     ${availableOffers}
@@ -31,19 +31,19 @@ const createEventSectionOffers = (arrayOffers) => {
   return '';
 };
 
-const createImageDestination = (element) => (`<img class="event__photo" src="${element.src}" alt="${element.description}">`);
+const createImageDestination = (pathForImg) => (`<img class="event__photo" src="${pathForImg.src}" alt="${pathForImg.description}">`);
 
-const createDstinationDescription = (arrayDescription) => {
-  if (arrayDescription && arrayDescription.length !== 0) {
-    const destinationDescription = arrayDescription.join(' ');
+const createDstinationDescription = (descriptions) => {
+  if (descriptions && descriptions.length !== 0) {
+    const destinationDescription = descriptions.join(' ');
     return `<p class="event__destination-description">${destinationDescription}</p>`;
   }
   return '';
 };
 
-const createDstinationPictures = (arrayPictures) => {
-  if (arrayPictures && arrayPictures.length !== 0) {
-    const listImageDestination = arrayPictures.map((element) => createImageDestination(element)).join(' ');
+const createDstinationPictures = (pictures) => {
+  if (pictures && pictures.length !== 0) {
+    const listImageDestination = pictures.map((element) => createImageDestination(element)).join(' ');
     return `<div class="event__photos-container">
       <div class="event__photos-tape">
       ${listImageDestination}
@@ -53,18 +53,18 @@ const createDstinationPictures = (arrayPictures) => {
   return '';
 };
 
-const createEventSectionDestination = (objectDestination) => {
-  if (objectDestination.description && objectDestination.description.length !== 0 || objectDestination.pictures && objectDestination.pictures.length !== 0) {
+const createEventSectionDestination = (destination) => {
+  if (destination.description && destination.description.length !== 0 || destination.pictures && destination.pictures.length !== 0) {
     return `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    ${createDstinationDescription(objectDestination.description)}
-    ${createDstinationPictures(objectDestination.pictures)}
+    ${createDstinationDescription(destination.description)}
+    ${createDstinationPictures(destination.pictures)}
   </section>`;
   }
   return '';
 };
 
-export const createEventNewAddTemplate = (dataMock = {}) => {
+export const createEventNewAddTemplate = (eventData = {}) => {
   const {
     type =  {
       typePoint: 'Flight',
@@ -91,7 +91,7 @@ export const createEventNewAddTemplate = (dataMock = {}) => {
     dateTo = new Date(),
     basePrice = '',
     offers = [],
-  } = dataMock;
+  } = eventData;
   const listOptionCities = availableCities.map((city) => createOptionForCity(city)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);

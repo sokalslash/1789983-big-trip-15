@@ -8,8 +8,8 @@ const createFilterItemTemplate = (filter) => {
 };
 
 
-export const createEventsFiltersTemplate = (dateMock) => {
-  const filterItemsTemplate = dateMock.map((filter) => createFilterItemTemplate(filter)).join('');
+export const createEventsFiltersTemplate = (filterData) => {
+  const filterItemsTemplate = filterData.map((filter) => createFilterItemTemplate(filter)).join('');
 
   return `<form class="trip-filters" action="#" method="get">
   ${filterItemsTemplate}

@@ -32,5 +32,5 @@ const tripEventsListElement = tripEventsElement.querySelector('.trip-events__lis
 for (let i = 1; i < mocks.length; i++) {
   render(tripEventsListElement, createTripEventTemplate(mocks[i]), 'beforeend');
 }
-render(tripEventsListElement, createEventNewAddTemplate(), 'beforeend');
+render(tripEventsListElement, createEventNewAddTemplate(mocks), 'beforeend');
 render(tripEventsListElement, createPointEditTemplate(mocks[0]), 'afterbegin');
