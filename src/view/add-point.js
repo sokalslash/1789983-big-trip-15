@@ -1,4 +1,32 @@
-import {humanizeDateForPoint} from '../utils.js';
+import {humanizeDateForPoint, createElement} from '../utils.js';
+
+const EMPTY_EVENT = {
+  type: {
+    typePoint: 'Flight',
+    iconPoint: 'img/icons/flight.png',
+  },
+  availableCities: [
+    'Salzburg',
+    'Washington',
+    'Cairo',
+    'Galway',
+    'Bonn',
+    'La-Paz',
+    'Kochi',
+    'Vancouver',
+    'Dubai',
+    'Denver',
+  ],
+  destination: {
+    description: '',
+    name: '',
+    pictures: [],
+  },
+  dateFrom: new Date(),
+  dateTo: new Date(),
+  basePrice: '',
+  offers: [],
+};
 
 const forRenderOffers = {
   'Upgrade to a business class': 'business',
@@ -64,34 +92,8 @@ const createEventSectionDestination = (destination) => {
   return '';
 };
 
-export const createEventNewAddTemplate = (eventData = {}) => {
-  const {
-    type =  {
-      typePoint: 'Flight',
-      iconPoint: 'img/icons/flight.png',
-    },
-    availableCities = [
-      'Salzburg',
-      'Washington',
-      'Cairo',
-      'Galway',
-      'Bonn',
-      'La-Paz',
-      'Kochi',
-      'Vancouver',
-      'Dubai',
-      'Denver',
-    ],
-    destination = {
-      description: '',
-      name: '',
-      pictures: [],
-    },
-    dateFrom = new Date(),
-    dateTo = new Date(),
-    basePrice = '',
-    offers = [],
-  } = eventData;
+const createEventNewAddTemplate = (eventOfTrip) => {
+  const {type, availableCities, destination, dateFrom, dateTo, basePrice, offers} = eventOfTrip;
   const listOptionCities = availableCities.map((city) => createOptionForCity(city)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
@@ -201,3 +203,25 @@ export const createEventNewAddTemplate = (eventData = {}) => {
 </form>
 </li>`;
 };
+
+export default class EventNewAdd {
+  constructor(eventOfTrip = EMPTY_EVENT) {
+    this._eventTrip = eventOfTrip;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEventNewAddTemplate(this._eventTrip);
+  }
+
+  getElement() {
+    if(!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

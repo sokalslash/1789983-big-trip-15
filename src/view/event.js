@@ -1,4 +1,4 @@
-import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent} from '../utils.js';
+import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent, createElement} from '../utils.js';
 
 const createOfferListItemTemplete = (offer) => (`<li class="event__offer">
   <span class="event__offer-title">${offer.title}</span>
@@ -22,7 +22,7 @@ const isFavorite = (flag) => {
   return '';
 };
 
-export const createTripEventTemplate = (eventData) => {
+const createTripEventTemplate = (eventData) => {
   if (eventData && eventData.length !== 0) {
     const {dateFrom, dateTo, dateDifference, type, destination, basePrice, offers, favorite} = eventData;
     const dateForStart = humanizeDateForEventAndInfo(dateFrom);
@@ -67,3 +67,25 @@ export const createTripEventTemplate = (eventData) => {
   }
   return '';
 };
+
+export default class TripEvent {
+  constructor(eventData) {
+    this.__eventsTrip = eventData;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripEventTemplate(this.__eventsTrip);
+  }
+
+  getElement() {
+    if(!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

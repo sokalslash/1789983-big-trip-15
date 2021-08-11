@@ -1,4 +1,4 @@
-import {humanizeDateForPoint} from '../utils.js';
+import {humanizeDateForPoint, createElement} from '../utils.js';
 
 const forRenderOffers = {
   'Upgrade to a business class': 'business',
@@ -64,8 +64,8 @@ const createEventSectionDestination = (destination) => {
   return '';
 };
 
-export const createPointEditTemplate = (eventData) => {
-  const {type, availableCities, destination, dateFrom, dateTo, basePrice, offers} = eventData;
+const createPointEditTemplate = (eventOfTrip) => {
+  const {type, availableCities, destination, dateFrom, dateTo, basePrice, offers} = eventOfTrip;
   const listOptionCities = availableCities.map((city) => createOptionForCity(city)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
@@ -178,3 +178,25 @@ export const createPointEditTemplate = (eventData) => {
 </form>
 </li>`;
 };
+
+export default class PointEdit {
+  constructor(eventOfTrip) {
+    this._eventTrip = eventOfTrip;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPointEditTemplate(this._eventTrip);
+  }
+
+  getElement() {
+    if(!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

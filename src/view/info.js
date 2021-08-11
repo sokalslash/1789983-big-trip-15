@@ -1,4 +1,4 @@
-import {humanizeDateForEventAndInfo} from '../utils.js';
+import {humanizeDateForEventAndInfo, createElement} from '../utils.js';
 
 
 const createNameTrip = (eventData) => {
@@ -24,7 +24,7 @@ const calculateOffersCost = (points) => {
   return offersCost.reduce((accumulator, element) => accumulator + element, 0);
 };
 
-export const createTripInfoTemplate = (eventData) => {
+const createTripInfoTemplate = (eventData) => {
   const tripInfoCost = eventData.reduce((accumulator, point) => accumulator + point.basePrice, 0);
   const offersConst = calculateOffersCost(eventData);
   const totalTripInfoCost = tripInfoCost + offersConst;
@@ -49,3 +49,25 @@ export const createTripInfoTemplate = (eventData) => {
   }
   return '';
 };
+
+export default class TripInfo {
+  constructor (eventData) {
+    this._eventsTrip = eventData;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripInfoTemplate(this._eventsTrip);
+  }
+
+  getElement() {
+    if(!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
