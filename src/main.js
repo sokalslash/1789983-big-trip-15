@@ -4,7 +4,6 @@ import EventsFiltersView from './view/filters';
 import EventsSortView from './view/sort.js';
 import ListEventsView from './view/list-events.js';
 import TripEventView from './view/event';
-import EventNewAddView from './view/add-point.js';
 import PointEditView from './view/edit-point.js';
 import MessageClickNewEventView from './view/no-events.js';
 import {generatePointTrip} from './mock/point-trip';
@@ -73,5 +72,3 @@ render(tripEventsElement, listEventsElement.getElement(), RenderPosition.BEFOREE
 for (let i = 0; i < mocks.length; i++) {
   renderEvent(listEventsElement.getElement(), mocks[i]);
 }
-
-//render(listEventsElement.getElement(), new EventNewAddView(mocks[0]).getElement(), RenderPosition.BEFOREEND);
