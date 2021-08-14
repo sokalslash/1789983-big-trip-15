@@ -199,4 +199,8 @@ export default class PointEdit {
   removeElement() {
     this._element = null;
   }
+
+  onFormEditClickOrKeyDown(container, replaceTo) {
+    container.replaceChild(replaceTo, this.getElement());
+  }
 }

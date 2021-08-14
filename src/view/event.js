@@ -88,4 +88,8 @@ export default class TripEvent {
   removeElement() {
     this._element = null;
   }
+
+  onButtonRollupClick(container, replaceTo) {
+    container.replaceChild(replaceTo, this.getElement());
+  }
 }
