@@ -1,4 +1,4 @@
-import {humanizeDateForPoint} from '../utils.js';
+import {humanizeDateForPoint} from '../utils/point.js';
 import AbstractView from './abstract.js';
 
 const EMPTY_EVENT = {

@@ -1,4 +1,4 @@
-import {humanizeDateForPoint} from '../utils.js';
+import {humanizeDateForPoint} from '../utils/point.js';
 import AbstractView from './abstract.js';
 
 const forRenderOffers = {
@@ -184,13 +184,30 @@ export default class PointEdit extends AbstractView {
   constructor(eventOfTrip) {
     super();
     this._eventTrip = eventOfTrip;
+    this._clickHandler = this._clickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createPointEditTemplate(this._eventTrip);
   }
 
-  onFormEditClickOrKeyDown(container, replaceTo) {
-    container.replaceChild(replaceTo, this.getElement());
+  _clickHandler() {
+    this._callback.editClick();
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
   }
 }

@@ -1,4 +1,4 @@
-import {humanizeDateForEventAndInfo} from '../utils.js';
+import {humanizeDateForEventAndInfo} from '../utils/point.js';
 import AbstractView from './abstract.js';
 
 const createNameTrip = (eventData) => {

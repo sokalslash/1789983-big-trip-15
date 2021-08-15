@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {getRandomInteger, getArrayElements} from '../utils.js';
+import {getRandomInteger, getArrayElements} from '../utils/common.js';
 
 const MAX_DATE_GAP = 151200;
 const ONE_MINUTE = 60000;

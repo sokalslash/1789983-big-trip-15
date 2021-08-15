@@ -8,7 +8,7 @@ import PointEditView from './view/edit-point.js';
 import NoEventsTripView from './view/no-events.js';
 import {generatePointTrip} from './mock/point-trip';
 import {createMockFilters} from './mock/filter-mock.js';
-import {RenderPosition, render} from './utils.js';
+import {RenderPosition, render, replace} from './utils/render.js';
 
 const MOCK_COUNT = 15;
 
@@ -24,24 +24,23 @@ const renderEvent = (listEventsContainer, eventOfTrip) => {
   const onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      eventEdit.onFormEditClickOrKeyDown(listEventsContainer, eventTrip.getElement());
+      replace(eventTrip, eventEdit);
       document.removeEventListener('keydown', onEscKeyDown);
     }
   };
 
-  eventTrip.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
-    eventTrip.onButtonRollupClick(listEventsContainer, eventEdit.getElement());
+  eventTrip.setClickHandler(() => {
+    replace(eventEdit, eventTrip);
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  eventEdit.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
-    eventEdit.onFormEditClickOrKeyDown(listEventsContainer, eventTrip.getElement());
+  eventEdit.setClickHandler(() => {
+    replace(eventTrip, eventEdit);
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  eventEdit.getElement().querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    eventEdit.onFormEditClickOrKeyDown(listEventsContainer, eventTrip.getElement());
+  eventEdit.setFormSubmitHandler(() => {
+    replace(eventTrip, eventEdit);
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
