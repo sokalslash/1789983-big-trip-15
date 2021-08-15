@@ -1,5 +1,5 @@
-import {humanizeDateForEventAndInfo, createElement} from '../utils.js';
-
+import {humanizeDateForEventAndInfo} from '../utils.js';
+import AbstractView from './abstract.js';
 
 const createNameTrip = (eventData) => {
   if (eventData.length === 1 || eventData.length === 2) {
@@ -50,24 +50,13 @@ const createTripInfoTemplate = (eventData) => {
   return '';
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractView {
   constructor (eventData) {
+    super();
     this._eventsTrip = eventData;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._eventsTrip);
-  }
-
-  getElement() {
-    if(!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

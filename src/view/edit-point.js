@@ -1,4 +1,5 @@
-import {humanizeDateForPoint, createElement} from '../utils.js';
+import {humanizeDateForPoint} from '../utils.js';
+import AbstractView from './abstract.js';
 
 const forRenderOffers = {
   'Upgrade to a business class': 'business',
@@ -179,25 +180,14 @@ const createPointEditTemplate = (eventOfTrip) => {
 </li>`;
 };
 
-export default class PointEdit {
+export default class PointEdit extends AbstractView {
   constructor(eventOfTrip) {
+    super();
     this._eventTrip = eventOfTrip;
-    this._element = null;
   }
 
   getTemplate() {
     return createPointEditTemplate(this._eventTrip);
-  }
-
-  getElement() {
-    if(!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 
   onFormEditClickOrKeyDown(container, replaceTo) {
