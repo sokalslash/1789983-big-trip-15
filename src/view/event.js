@@ -1,4 +1,5 @@
-import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent, createElement} from '../utils.js';
+import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent} from '../utils/point.js';
+import AbstractView from './abstract.js';
 
 const createOfferListItemTemplete = (offer) => (`<li class="event__offer">
   <span class="event__offer-title">${offer.title}</span>
@@ -68,24 +69,23 @@ const createTripEventTemplate = (eventData) => {
   return '';
 };
 
-export default class TripEvent {
+export default class TripEvent extends AbstractView {
   constructor(eventData) {
-    this.__eventsTrip = eventData;
-    this._element = null;
+    super();
+    this._eventsTrip = eventData;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
-    return createTripEventTemplate(this.__eventsTrip);
+    return createTripEventTemplate(this._eventsTrip);
   }
 
-  getElement() {
-    if(!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
+  _clickHandler() {
+    this._callback.pointClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setClickHandler(callback) {
+    this._callback.pointClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
   }
 }

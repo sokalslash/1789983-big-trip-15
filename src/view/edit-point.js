@@ -1,4 +1,5 @@
-import {humanizeDateForPoint, createElement} from '../utils.js';
+import {humanizeDateForPoint} from '../utils/point.js';
+import AbstractView from './abstract.js';
 
 const forRenderOffers = {
   'Upgrade to a business class': 'business',
@@ -179,24 +180,34 @@ const createPointEditTemplate = (eventOfTrip) => {
 </li>`;
 };
 
-export default class PointEdit {
+export default class PointEdit extends AbstractView {
   constructor(eventOfTrip) {
+    super();
     this._eventTrip = eventOfTrip;
-    this._element = null;
+    this._clickHandler = this._clickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
     return createPointEditTemplate(this._eventTrip);
   }
 
-  getElement() {
-    if(!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
+  _clickHandler() {
+    this._callback.editClick();
   }
 
-  removeElement() {
-    this._element = null;
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
   }
 }

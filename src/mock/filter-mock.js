@@ -1,4 +1,4 @@
-import {isPast, isFutures} from '../utils.js';
+import {isPast, isFutures} from '../utils/point';
 
 const objectFiltersMocks = {
   everything: (mocks) => mocks.filter((mock) => mock),

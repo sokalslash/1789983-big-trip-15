@@ -5,12 +5,12 @@ import EventsSortView from './view/sort.js';
 import ListEventsView from './view/list-events.js';
 import TripEventView from './view/event';
 import PointEditView from './view/edit-point.js';
-import MessageClickNewEventView from './view/no-events.js';
+import NoEventsTripView from './view/no-events.js';
 import {generatePointTrip} from './mock/point-trip';
 import {createMockFilters} from './mock/filter-mock.js';
-import {RenderPosition, render} from './utils.js';
+import {RenderPosition, render, replace} from './utils/render.js';
 
-const MOCK_COUNT = 0;
+const MOCK_COUNT = 15;
 
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteMenuElement = siteHeaderElement.querySelector('.trip-controls__navigation');
@@ -21,35 +21,26 @@ const renderEvent = (listEventsContainer, eventOfTrip) => {
   const eventTrip = new TripEventView(eventOfTrip);
   const eventEdit = new PointEditView(eventOfTrip);
 
-  const replacePointToFormEdit = () => {
-    listEventsContainer.replaceChild(eventEdit.getElement(), eventTrip.getElement());
-  };
-
-  const replaceFormEditToPoint = () => {
-    listEventsContainer.replaceChild(eventTrip.getElement(), eventEdit.getElement());
-  };
-
   const onEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      replaceFormEditToPoint();
+      replace(eventTrip, eventEdit);
       document.removeEventListener('keydown', onEscKeyDown);
     }
   };
 
-  eventTrip.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
-    replacePointToFormEdit();
+  eventTrip.setClickHandler(() => {
+    replace(eventEdit, eventTrip);
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  eventEdit.getElement().querySelector('.event__rollup-btn').addEventListener('click', () => {
-    replaceFormEditToPoint();
+  eventEdit.setClickHandler(() => {
+    replace(eventTrip, eventEdit);
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  eventEdit.getElement().querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    replaceFormEditToPoint();
+  eventEdit.setFormSubmitHandler(() => {
+    replace(eventTrip, eventEdit);
     document.removeEventListener('keydown', onEscKeyDown);
   });
 
@@ -63,7 +54,7 @@ render(siteHeaderElement, new TripInfo(mocks).getElement(), RenderPosition.AFTER
 render(siteMenuElement, new SiteMenuView().getElement(), RenderPosition.BEFOREEND);
 render(siteFilterElement, new EventsFiltersView(mocksFilters).getElement(), RenderPosition.BEFOREEND);
 if(mocks.length === 0) {
-  render(tripEventsElement, new MessageClickNewEventView().getElement(), RenderPosition.BEFOREEND);
+  render(tripEventsElement, new NoEventsTripView().getElement(), RenderPosition.BEFOREEND);
 } else {
   render(tripEventsElement, new EventsSortView().getElement(), RenderPosition.BEFOREEND);
 }

@@ -1,4 +1,5 @@
-import {humanizeDateForPoint, createElement} from '../utils.js';
+import {humanizeDateForPoint} from '../utils/point.js';
+import AbstractView from './abstract.js';
 
 const EMPTY_EVENT = {
   type: {
@@ -204,24 +205,13 @@ const createEventNewAddTemplate = (eventOfTrip) => {
 </li>`;
 };
 
-export default class EventNewAdd {
+export default class EventNewAdd extends AbstractView {
   constructor(eventOfTrip = EMPTY_EVENT) {
+    super();
     this._eventTrip = eventOfTrip;
-    this._element = null;
   }
 
   getTemplate() {
     return createEventNewAddTemplate(this._eventTrip);
-  }
-
-  getElement() {
-    if(!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
