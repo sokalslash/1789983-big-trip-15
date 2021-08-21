@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 import {getRandomInteger, getArrayElements} from '../utils/common.js';
 
 const MAX_DATE_GAP = 151200;
@@ -137,6 +138,7 @@ const generatePointTrip = () => {
   const newDateFrom = generateDateFrom();
   const newDateTo = generateDateTo(newDateFrom);
   return {
+    id: nanoid(),
     type: typePoint,
     offers: getArrayElements(offers),
     destination: generateDestination(),

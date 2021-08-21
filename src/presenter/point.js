@@ -3,8 +3,9 @@ import PointEditView from '../view/edit-point.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
 
 export default class Point {
-  constructor(listEventsElement) {
+  constructor(listEventsElement, changeData) {
     this._listEventsElement = listEventsElement;
+    this._changeData = changeData;
 
     this._eventTrip = null;
     this._eventEdit = null;
@@ -12,6 +13,7 @@ export default class Point {
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handlerRollupButtonOrSubmitFormEdit = this._handlerRollupButtonOrSubmitFormEdit.bind(this);
     this._handlerRollupButtonPoint = this._handlerRollupButtonPoint.bind(this);
+    this._handlerFavoriteClick = this._handlerFavoriteClick.bind(this);
   }
 
   init(eventOfTrip) {
@@ -29,16 +31,18 @@ export default class Point {
 
     this._eventEdit.setFormSubmitHandler(this._handlerRollupButtonOrSubmitFormEdit);
 
+    this._eventTrip.setClickFavoriteHandler(this._handlerFavoriteClick);
+
     if(prevEventTrip === null || prevEventEdit === null) {
       render(this._listEventsElement, this._eventTrip, RenderPosition.BEFOREEND);
       return;
     }
 
-    if(this._listEventsElement.getElement().containse(prevEventEdit.getElement())) {
+    if(this._listEventsElement.getElement().contains(prevEventTrip.getElement())) {
       replace(this._eventTrip, prevEventTrip);
     }
 
-    if(this._listEventsElement.getElement().containse(prevEventTrip.getElement())) {
+    if(this._listEventsElement.getElement().contains(prevEventEdit.getElement())) {
       replace(this._eventEdit, prevEventEdit);
     }
 
@@ -75,5 +79,17 @@ export default class Point {
 
   _handlerRollupButtonOrSubmitFormEdit() {
     this._repleceFormEditToPoint();
+  }
+
+  _handlerFavoriteClick() {
+    this._changeData(
+      Object.assign(
+        {},
+        this._eventOfTrip,
+        {
+          favorite: !this._eventOfTrip.favorite,
+        },
+      ),
+    );
   }
 }

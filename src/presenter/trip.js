@@ -3,16 +3,20 @@ import NoEventsTripView from '../view/no-events.js';
 import EventsSortView from '../view/sort.js';
 import PointPresenter from './point.js';
 import {RenderPosition, render} from '../utils/render.js';
+import {updateItem} from '../utils/common';
 
 const NO_EVENTS = 0;
 
 export default class Trip {
   constructor(tripEventsElement) {
     this._tripEventsElement = tripEventsElement;
+    this._pointPresenter = new Map();
 
     this._listEventsElement = new ListEventsView();
     this._noEventsTrip = new NoEventsTripView();
     this._eventsSort = new EventsSortView();
+
+    this._handlerPointChange = this._handlerPointChange.bind(this);
   }
 
   init(eventData) {
@@ -25,6 +29,11 @@ export default class Trip {
     }
   }
 
+  _handlerPointChange(updateEvent) {
+    this._eventData = updateItem(this._eventData, updateEvent);
+    this._pointPresenter.get(updateEvent.id).init(updateEvent);
+  }
+
   _renderNoEvents() {
     render(this._tripEventsElement, this._noEventsTrip, RenderPosition.BEFOREEND);
   }
@@ -34,8 +43,14 @@ export default class Trip {
   }
 
   _renderEvent(eventOfTrip) {
-    const pointPresenter = new PointPresenter(this._listEventsElement);
+    const pointPresenter = new PointPresenter(this._listEventsElement, this._handlerPointChange);
     pointPresenter.init(eventOfTrip);
+    this._pointPresenter.set(eventOfTrip.id, pointPresenter);
+  }
+
+  _clearListEventsTrip() {
+    this._pointPresenter.forEach((presenter) => presenter.destroy());
+    this._pointPresenter.clear();
   }
 
   _renderEventsTrip(eventsTrip) {
