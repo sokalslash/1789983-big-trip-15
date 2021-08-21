@@ -17,6 +17,7 @@ export default class Trip {
     this._eventsSort = new EventsSortView();
 
     this._handlerPointChange = this._handlerPointChange.bind(this);
+    this._handlerModeChange = this._handlerModeChange.bind(this);
   }
 
   init(eventData) {
@@ -27,6 +28,10 @@ export default class Trip {
       this._renderSort();
       this._renderEventsTrip(this._eventData);
     }
+  }
+
+  _handlerModeChange() {
+    this._pointPresenter.forEach((presenter) => presenter.resetView());
   }
 
   _handlerPointChange(updateEvent) {
@@ -43,7 +48,7 @@ export default class Trip {
   }
 
   _renderEvent(eventOfTrip) {
-    const pointPresenter = new PointPresenter(this._listEventsElement, this._handlerPointChange);
+    const pointPresenter = new PointPresenter(this._listEventsElement, this._handlerPointChange, this._handlerModeChange);
     pointPresenter.init(eventOfTrip);
     this._pointPresenter.set(eventOfTrip.id, pointPresenter);
   }

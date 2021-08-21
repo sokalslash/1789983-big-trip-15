@@ -2,13 +2,20 @@ import TripEventView from '../view/event.js';
 import PointEditView from '../view/edit-point.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class Point {
-  constructor(listEventsElement, changeData) {
+  constructor(listEventsElement, changeData, changeMode) {
     this._listEventsElement = listEventsElement;
     this._changeData = changeData;
+    this._changeMode = changeMode;
 
     this._eventTrip = null;
     this._eventEdit = null;
+    this._mode = Mode.DEFAULT;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handlerRollupButtonOrSubmitFormEdit = this._handlerRollupButtonOrSubmitFormEdit.bind(this);
@@ -38,11 +45,11 @@ export default class Point {
       return;
     }
 
-    if(this._listEventsElement.getElement().contains(prevEventTrip.getElement())) {
+    if(this._mode === Mode.DEFAULT) {
       replace(this._eventTrip, prevEventTrip);
     }
 
-    if(this._listEventsElement.getElement().contains(prevEventEdit.getElement())) {
+    if(this._mode === Mode.EDITING) {
       replace(this._eventEdit, prevEventEdit);
     }
 
@@ -53,6 +60,12 @@ export default class Point {
   destroy() {
     remove(this._eventTrip);
     remove(this._eventEdit);
+  }
+
+  resetView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._repleceFormEditToPoint();
+    }
   }
 
   _escKeyDownHandler(evt) {
@@ -66,11 +79,14 @@ export default class Point {
   _replecePointToFormEdit() {
     replace(this._eventEdit, this._eventTrip);
     document.addEventListener('keydown', this._escKeyDownHandler);
+    this._changeMode();
+    this._mode = Mode.EDITING;
   }
 
   _repleceFormEditToPoint() {
     replace(this._eventTrip, this._eventEdit);
     document.removeEventListener('keydown', this._escKeyDownHandler);
+    this._mode = Mode.DEFAULT;
   }
 
   _handlerRollupButtonPoint() {
