@@ -70,22 +70,32 @@ const createTripEventTemplate = (eventData) => {
 };
 
 export default class TripEvent extends AbstractView {
-  constructor(eventData) {
+  constructor(eventOfTrip) {
     super();
-    this._eventsTrip = eventData;
+    this._eventOfTrip = eventOfTrip;
     this._clickHandler = this._clickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createTripEventTemplate(this._eventsTrip);
+    return createTripEventTemplate(this._eventOfTrip);
   }
 
   _clickHandler() {
     this._callback.pointClick();
   }
 
+  _favoriteClickHandler() {
+    this._callback.favoriteClick();
+  }
+
   setClickHandler(callback) {
     this._callback.pointClick = callback;
     this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
+  }
+
+  setClickFavoriteHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('.event__favorite-btn').addEventListener('click', this._favoriteClickHandler);
   }
 }
