@@ -72,6 +72,7 @@ export default class Point {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       replace(this._eventTrip, this._eventEdit);
+      this._mode = Mode.DEFAULT;
       document.removeEventListener('keydown', this._escKeyDownHandler);
     }
   }

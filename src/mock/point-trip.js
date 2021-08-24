@@ -105,13 +105,13 @@ const generateDestination = () => {
 };
 
 const generateDateFrom = () => {
-  const hourGapForFrom = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
-  return dayjs().add(hourGapForFrom, 'second');
+  const secondGapForFrom = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
+  return dayjs().add(secondGapForFrom, 'second');
 };
 
 const generateDateTo = (date) => {
-  const hourGapForTo = getRandomInteger(1, MAX_DATE_GAP);
-  return date.add(hourGapForTo, 'second');
+  const secondGapForTo = getRandomInteger(1, MAX_DATE_GAP);
+  return date.add(secondGapForTo, 'second');
 };
 
 const generateDifferenceDate = (endDate, startDate) => {
