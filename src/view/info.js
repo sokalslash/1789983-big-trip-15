@@ -1,17 +1,17 @@
-import {humanizeDateForEventAndInfo} from '../utils/point.js';
+import {humanizeDateForEventAndInfo} from '../utils/point-util.js';
 import AbstractView from './abstract.js';
 
-const createNameTrip = (eventData) => {
-  if (eventData.length === 1 || eventData.length === 2) {
-    return `<h1 class="trip-info__title">${eventData[0].destination.name} &mdash;
-     ${eventData[eventData.length-1].destination.name}</h1>`;
+const createNameTrip = (tripEvents) => {
+  if (tripEvents.length === 1 || tripEvents.length === 2) {
+    return `<h1 class="trip-info__title">${tripEvents[0].destination.name} &mdash;
+     ${tripEvents[tripEvents.length-1].destination.name}</h1>`;
   }
-  if (eventData.length === 3) {
-    return `<h1 class="trip-info__title">${eventData[0].destination.name} &mdash;
-      ${eventData[1].destination.name} &mdash; ${eventData[eventData.length-1].destination.name}</h1>`;
+  if (tripEvents.length === 3) {
+    return `<h1 class="trip-info__title">${tripEvents[0].destination.name} &mdash;
+      ${tripEvents[1].destination.name} &mdash; ${tripEvents[tripEvents.length-1].destination.name}</h1>`;
   }
-  return `<h1 class="trip-info__title">${eventData[0].destination.name} &mdash;
-     ... &mdash; ${eventData[eventData.length-1].destination.name}</h1>`;
+  return `<h1 class="trip-info__title">${tripEvents[0].destination.name} &mdash;
+     ... &mdash; ${tripEvents[tripEvents.length-1].destination.name}</h1>`;
 };
 
 const calculateOffersCost = (points) => {
@@ -24,16 +24,16 @@ const calculateOffersCost = (points) => {
   return offersCost.reduce((accumulator, element) => accumulator + element, 0);
 };
 
-const createTripInfoTemplate = (eventData) => {
-  const tripInfoCost = eventData.reduce((accumulator, point) => accumulator + point.basePrice, 0);
-  const offersConst = calculateOffersCost(eventData);
+const createTripInfoTemplate = (tripEvents) => {
+  const tripInfoCost = tripEvents.reduce((accumulator, point) => accumulator + point.basePrice, 0);
+  const offersConst = calculateOffersCost(tripEvents);
   const totalTripInfoCost = tripInfoCost + offersConst;
-  if (eventData.length !== 0) {
-    const {dateFrom} = eventData[0];
+  if (tripEvents.length !== 0) {
+    const {dateFrom} = tripEvents[0];
     const dateStart = humanizeDateForEventAndInfo(dateFrom);
-    const {dateTo} = eventData[eventData.length-1];
+    const {dateTo} = tripEvents[tripEvents.length-1];
     const dateEnd = humanizeDateForEventAndInfo(dateTo);
-    const tripInfoTitle = createNameTrip(eventData);
+    const tripInfoTitle = createNameTrip(tripEvents);
 
     return `<section class="trip-main__trip-info  trip-info">
   <div class="trip-info__main">
@@ -51,12 +51,12 @@ const createTripInfoTemplate = (eventData) => {
 };
 
 export default class TripInfo extends AbstractView {
-  constructor (eventData) {
+  constructor (tripEvents) {
     super();
-    this._eventsTrip = eventData;
+    this._tripEvents = tripEvents;
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this._eventsTrip);
+    return createTripInfoTemplate(this._tripEvents);
   }
 }

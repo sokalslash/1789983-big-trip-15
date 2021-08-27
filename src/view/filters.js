@@ -9,8 +9,8 @@ const createFilterItemTemplate = (filter) => {
 
 };
 
-const createEventsFiltersTemplate = (filterData) => {
-  const filterItemsTemplate = filterData.map((filter) => createFilterItemTemplate(filter)).join('');
+const createEventsFiltersTemplate = (filtes) => {
+  const filterItemsTemplate = filtes.map((filter) => createFilterItemTemplate(filter)).join('');
 
   return `<form class="trip-filters" action="#" method="get">
   ${filterItemsTemplate}
@@ -19,9 +19,9 @@ const createEventsFiltersTemplate = (filterData) => {
 };
 
 export default class EventsFilters extends AbstractView {
-  constructor(filterData) {
+  constructor(filters) {
     super();
-    this._filters = filterData;
+    this._filters = filters;
   }
 
   getTemplate() {

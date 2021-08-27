@@ -1,4 +1,4 @@
-import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent} from '../utils/point.js';
+import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent} from '../utils/point-util.js';
 import AbstractView from './abstract.js';
 
 const createOfferListItemTemplete = (offer) => (`<li class="event__offer">
@@ -23,9 +23,9 @@ const isFavorite = (flag) => {
   return '';
 };
 
-const createTripEventTemplate = (eventData) => {
-  if (eventData && eventData.length !== 0) {
-    const {dateFrom, dateTo, dateDifference, type, destination, basePrice, offers, favorite} = eventData;
+const createTripEventTemplate = (tripEvents) => {
+  if (tripEvents && tripEvents.length !== 0) {
+    const {dateFrom, dateTo, dateDifference, type, destination, basePrice, offers, favorite} = tripEvents;
     const dateForStart = humanizeDateForEventAndInfo(dateFrom);
     const dateForAttributeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForAttributeTimeStart = humanizeDateForAttributeEvent(dateFrom);
@@ -70,28 +70,28 @@ const createTripEventTemplate = (eventData) => {
 };
 
 export default class TripEvent extends AbstractView {
-  constructor(eventOfTrip) {
+  constructor(tripEvent) {
     super();
-    this._eventOfTrip = eventOfTrip;
-    this._clickHandler = this._clickHandler.bind(this);
+    this._tripEvent = tripEvent;
+    this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createTripEventTemplate(this._eventOfTrip);
+    return createTripEventTemplate(this._tripEvent);
   }
 
-  _clickHandler() {
-    this._callback.pointClick();
+  _rollupButtonClickHandler() {
+    this._callback.rollupButtonClick();
   }
 
   _favoriteClickHandler() {
     this._callback.favoriteClick();
   }
 
-  setClickHandler(callback) {
-    this._callback.pointClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
+  setRollupButtonClickHandler(callback) {
+    this._callback.rollupButtonClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupButtonClickHandler);
   }
 
   setClickFavoriteHandler(callback) {

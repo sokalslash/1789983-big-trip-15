@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 export const SortType = {
   TIME: 'sort-time',
   PRICE: 'sort-price',
-  DEFAULT: 'sort-day',
+  DAY: 'sort-day',
 };
 
 export const humanizeDateForPoint = (someDate) => dayjs(someDate).format('MM/DD/YY HH:mm');

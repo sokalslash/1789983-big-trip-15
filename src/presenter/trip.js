@@ -1,10 +1,10 @@
 import ListEventsView from '../view/list-events.js';
 import NoEventsTripView from '../view/no-events.js';
 import EventsSortView from '../view/sort.js';
-import PointPresenter from './point.js';
+import PointPresenter from './point-presenter.js';
 import {RenderPosition, render} from '../utils/render.js';
 import {updateItem} from '../utils/common';
-import {SortType, sortTime, sortPrice} from '../utils/point';
+import {SortType, sortTime, sortPrice} from '../utils/point-util.js';
 
 const NO_EVENTS = 0;
 
@@ -12,36 +12,36 @@ export default class Trip {
   constructor(tripEventsElement) {
     this._tripEventsElement = tripEventsElement;
     this._pointPresenter = new Map();
-    this._currentSortType = SortType.DEFAULT;
+    this._currentSortType = SortType.DAY;
 
     this._listEventsElement = new ListEventsView();
     this._noEventsTrip = new NoEventsTripView();
     this._eventsSort = new EventsSortView();
 
-    this._handlerPointChange = this._handlerPointChange.bind(this);
-    this._handlerModeChange = this._handlerModeChange.bind(this);
+    this._handlePointChange = this._handlePointChange.bind(this);
+    this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init(eventData) {
-    this._eventData = eventData.slice();
-    this._sourceEventData = eventData.slice();
+  init(tripEvents) {
+    this._tripEvents = tripEvents.slice();
+    this._sourceTripEvents = tripEvents.slice();
 
-    if(this._eventData.length === NO_EVENTS) {
+    if(this._tripEvents.length === NO_EVENTS) {
       this._renderNoEvents();
     } else {
       this._renderSort();
-      this._renderEventsTrip(this._eventData);
+      this._renderEventsTrip(this._tripEvents);
     }
   }
 
-  _handlerModeChange() {
+  _handleModeChange() {
     this._pointPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  _handlerPointChange(updateEvent) {
-    this._eventData = updateItem(this._eventData, updateEvent);
-    this._sourceEventData = updateItem(this._sourceEventData, updateEvent);
+  _handlePointChange(updateEvent) {
+    this._tripEvents = updateItem(this._tripEvents, updateEvent);
+    this._sourceTripEvents = updateItem(this._sourceTripEvents, updateEvent);
     this._pointPresenter.get(updateEvent.id).init(updateEvent);
   }
 
@@ -55,7 +55,7 @@ export default class Trip {
   }
 
   _renderEvent(eventOfTrip) {
-    const pointPresenter = new PointPresenter(this._listEventsElement, this._handlerPointChange, this._handlerModeChange);
+    const pointPresenter = new PointPresenter(this._listEventsElement, this._handlePointChange, this._handleModeChange);
     pointPresenter.init(eventOfTrip);
     this._pointPresenter.set(eventOfTrip.id, pointPresenter);
   }
@@ -75,13 +75,13 @@ export default class Trip {
   _sortPoints(sortType) {
     switch (sortType) {
       case SortType.TIME:
-        this._eventData.sort(sortTime);
+        this._tripEvents.sort(sortTime);
         break;
       case SortType.PRICE:
-        this._eventData.sort(sortPrice);
+        this._tripEvents.sort(sortPrice);
         break;
       default:
-        this._eventData = this._sourceEventData.slice();
+        this._tripEvents = this._sourceTripEvents.slice();
     }
 
     this._currentSortType = sortType;
@@ -94,6 +94,6 @@ export default class Trip {
 
     this._sortPoints(sortType);
     this._clearListEventsTrip();
-    this._renderEventsTrip(this._eventData);
+    this._renderEventsTrip(this._tripEvents);
   }
 }

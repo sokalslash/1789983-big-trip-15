@@ -1,4 +1,4 @@
-import {humanizeDateForPoint} from '../utils/point.js';
+import {humanizeDateForPoint} from '../utils/point-util.js';
 import AbstractView from './abstract.js';
 
 const EMPTY_EVENT = {
@@ -93,7 +93,7 @@ const createEventSectionDestination = (destination) => {
   return '';
 };
 
-const createEventNewAddTemplate = (eventOfTrip) => {
+const createPointEditTemplate = (eventOfTrip) => {
   const {type, availableCities, destination, dateFrom, dateTo, basePrice, offers} = eventOfTrip;
   const listOptionCities = availableCities.map((city) => createOptionForCity(city)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
@@ -196,6 +196,9 @@ const createEventNewAddTemplate = (eventOfTrip) => {
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
     <button class="event__reset-btn" type="reset">Cancel</button>
+    <button class="event__rollup-btn" type="button">
+    <span class="visually-hidden">Open event</span>
+  </button>
   </header>
   <section class="event__details">
     ${availableOffersConteiner}
@@ -205,13 +208,34 @@ const createEventNewAddTemplate = (eventOfTrip) => {
 </li>`;
 };
 
-export default class EventNewAdd extends AbstractView {
-  constructor(eventOfTrip = EMPTY_EVENT) {
+export default class PointEdit extends AbstractView {
+  constructor(tripEvent = EMPTY_EVENT) {
     super();
-    this._eventTrip = eventOfTrip;
+    this._tripEvent = tripEvent;
+    this._clickHandler = this._clickHandler.bind(this);
+    this._formSubmitHandler = this._formSubmitHandler.bind(this);
   }
 
   getTemplate() {
-    return createEventNewAddTemplate(this._eventTrip);
+    return createPointEditTemplate(this._tripEvent);
+  }
+
+  _clickHandler() {
+    this._callback.editClick();
+  }
+
+  _formSubmitHandler(evt) {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  setClickHandler(callback) {
+    this._callback.editClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
+  }
+
+  setFormSubmitHandler(callback) {
+    this._callback.formSubmit = callback;
+    this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
   }
 }

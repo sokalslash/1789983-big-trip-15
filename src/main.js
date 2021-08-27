@@ -1,5 +1,5 @@
 import SiteMenuView from './view/menu.js';
-import TripInfo from './view/info.js';
+import TripInfoView from './view/info.js';
 import EventsFiltersView from './view/filters';
 import {generatePointTrip} from './mock/point-trip';
 import {createMockFilters} from './mock/filter-mock.js';
@@ -16,7 +16,7 @@ const tripEventsElement = document.querySelector('.trip-events');
 const mocks = new Array(MOCK_COUNT).fill(null).map(generatePointTrip);
 const mocksFilters = createMockFilters(mocks);
 
-render(siteHeaderElement, new TripInfo(mocks), RenderPosition.AFTERBEGIN);
+render(siteHeaderElement, new TripInfoView(mocks), RenderPosition.AFTERBEGIN);
 render(siteMenuElement, new SiteMenuView(), RenderPosition.BEFOREEND);
 render(siteFilterElement, new EventsFiltersView(mocksFilters), RenderPosition.BEFOREEND);
 
