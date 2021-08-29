@@ -1,5 +1,5 @@
 import {humanizeDateForPoint} from '../utils/point-util.js';
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 
 const EMPTY_EVENT = {
   type: {
@@ -208,7 +208,7 @@ const createPointEditTemplate = (eventOfTrip) => {
 </li>`;
 };
 
-export default class PointEdit extends AbstractView {
+export default class PointEdit extends SmartView {
   constructor(tripEvent = EMPTY_EVENT) {
     super();
     this._tripEvent = tripEvent;
