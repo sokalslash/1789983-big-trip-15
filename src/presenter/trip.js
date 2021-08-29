@@ -31,7 +31,7 @@ export default class Trip {
       this._renderNoEvents();
     } else {
       this._renderSort();
-      this._renderEventsTrip(this._tripEvents);
+      this._renderTripEvents(this._tripEvents);
     }
   }
 
@@ -54,21 +54,21 @@ export default class Trip {
     this._eventsSort.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
-  _renderEvent(eventOfTrip) {
+  _renderEvent(tripEvent) {
     const pointPresenter = new PointPresenter(this._listEventsElement, this._handlePointChange, this._handleModeChange);
-    pointPresenter.init(eventOfTrip);
-    this._pointPresenter.set(eventOfTrip.id, pointPresenter);
+    pointPresenter.init(tripEvent);
+    this._pointPresenter.set(tripEvent.id, pointPresenter);
   }
 
-  _clearListEventsTrip() {
+  _clearTripEventsList() {
     this._pointPresenter.forEach((presenter) => presenter.destroy());
     this._pointPresenter.clear();
   }
 
-  _renderEventsTrip(eventsTrip) {
+  _renderTripEvents(tripEvents) {
     render(this._tripEventsElement, this._listEventsElement, RenderPosition.BEFOREEND);
-    for (let i = 0; i < eventsTrip.length; i++) {
-      this._renderEvent(eventsTrip[i]);
+    for (let i = 0; i < tripEvents.length; i++) {
+      this._renderEvent(tripEvents[i]);
     }
   }
 
@@ -93,7 +93,7 @@ export default class Trip {
     }
 
     this._sortPoints(sortType);
-    this._clearListEventsTrip();
-    this._renderEventsTrip(this._tripEvents);
+    this._clearTripEventsList();
+    this._renderTripEvents(this._tripEvents);
   }
 }

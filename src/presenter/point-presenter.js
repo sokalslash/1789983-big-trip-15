@@ -18,8 +18,8 @@ export default class Point {
     this._mode = Mode.DEFAULT;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
-    this._handleRollupButtonOrSubmitFormEdit = this._handleRollupButtonOrSubmitFormEdit.bind(this);
-    this._handleRollupButtonPoint = this._handleRollupButtonPoint.bind(this);
+    this._handleRollupButtonOrSubmitFormEditClick = this._handleRollupButtonOrSubmitFormEditClick.bind(this);
+    this._handleRollupButtonPointClick = this._handleRollupButtonPointClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
@@ -32,11 +32,11 @@ export default class Point {
     this._tripEventElement = new TripEventView(tripEvent);
     this._eventEditElement = new PointEditView(tripEvent);
 
-    this._tripEventElement.setRollupButtonClickHandler(this._handleRollupButtonPoint);
+    this._tripEventElement.setRollupButtonClickHandler(this._handleRollupButtonPointClick);
 
-    this._eventEditElement.setClickHandler(this._handleRollupButtonOrSubmitFormEdit);
+    this._eventEditElement.setClickHandler(this._handleRollupButtonOrSubmitFormEditClick);
 
-    this._eventEditElement.setFormSubmitHandler(this._handleRollupButtonOrSubmitFormEdit);
+    this._eventEditElement.setFormSubmitHandler(this._handleRollupButtonOrSubmitFormEditClick);
 
     this._tripEventElement.setClickFavoriteHandler(this._handleFavoriteClick);
 
@@ -88,11 +88,11 @@ export default class Point {
     this._mode = Mode.DEFAULT;
   }
 
-  _handleRollupButtonPoint() {
+  _handleRollupButtonPointClick() {
     this._replecePointToFormEdit();
   }
 
-  _handleRollupButtonOrSubmitFormEdit() {
+  _handleRollupButtonOrSubmitFormEditClick() {
     this._repleceFormEditToPoint();
   }
 
