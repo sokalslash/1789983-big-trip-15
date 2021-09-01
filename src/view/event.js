@@ -1,4 +1,4 @@
-import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent} from '../utils/point-util.js';
+import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent, pointTypeIcon} from '../utils/point-util.js';
 import AbstractView from './abstract.js';
 
 const createOfferListItemTemplete = (offer) => (`<li class="event__offer">
@@ -9,9 +9,12 @@ const createOfferListItemTemplete = (offer) => (`<li class="event__offer">
 
 const createOffersContainer = (offers) => {
   if (offers && offers.length !== 0) {
-    const offersList = offers.map((offer) => createOfferListItemTemplete(offer)).join('');
+    const offersList = [];
+    for (let i = 0; i < offers.length; i++) {
+      offersList.push(offers[i].offersAvailable.map((offerAvaileble) => createOfferListItemTemplete(offerAvaileble)).join(' '));
+    }
     return   `<h4 class="visually-hidden">Offers:</h4>
-    <ul class="event__selected-offers">${offersList}</ul>`;
+    <ul class="event__selected-offers">${offersList.join(' ')}</ul>`;
   }
   return '';
 };
@@ -25,7 +28,7 @@ const isFavorite = (flag) => {
 
 const createTripEventTemplate = (tripEvents) => {
   if (tripEvents && tripEvents.length !== 0) {
-    const {dateFrom, dateTo, dateDifference, type, destination, basePrice, offers, favorite} = tripEvents;
+    const {dateFrom, dateTo, dateDifference, type, basePrice, offers, favorite, destinationCity = 'Сhoose a city'} = tripEvents;
     const dateForStart = humanizeDateForEventAndInfo(dateFrom);
     const dateForAttributeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForAttributeTimeStart = humanizeDateForAttributeEvent(dateFrom);
@@ -39,9 +42,9 @@ const createTripEventTemplate = (tripEvents) => {
   <div class="event">
     <time class="event__date" datetime="${dateForAttributeStart}">${dateForStart}</time>
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src=${type.iconPoint} alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src=${pointTypeIcon[type]} alt="Event type icon">
     </div>
-    <h3 class="event__title">${type.typePoint} ${destination.name}</h3>
+    <h3 class="event__title">${type} ${destinationCity}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="${dateForAttributeTimeStart}">${dateForTimeStart}</time>

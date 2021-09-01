@@ -18,7 +18,9 @@ export default class Point {
     this._mode = Mode.DEFAULT;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
-    this._handleRollupButtonOrSubmitFormEditClick = this._handleRollupButtonOrSubmitFormEditClick.bind(this);
+    this._handleRollupButtonFormEditClick = this._handleRollupButtonFormEditClick.bind(this);
+    this._handleCancelFormEditClick = this._handleCancelFormEditClick.bind(this);
+    this._handleSubmitFormEditClick = this._handleSubmitFormEditClick.bind(this);
     this._handleRollupButtonPointClick = this._handleRollupButtonPointClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
@@ -34,9 +36,11 @@ export default class Point {
 
     this._tripEventElement.setRollupButtonClickHandler(this._handleRollupButtonPointClick);
 
-    this._eventEditElement.setClickHandler(this._handleRollupButtonOrSubmitFormEditClick);
+    this._eventEditElement.setRollupButtonClickHandler(this._handleRollupButtonFormEditClick);
 
-    this._eventEditElement.setFormSubmitHandler(this._handleRollupButtonOrSubmitFormEditClick);
+    this._eventEditElement.setCancelClickHandler(this._handleCancelFormEditClick);
+
+    this._eventEditElement.setFormSubmitHandler(this._handleSubmitFormEditClick);
 
     this._tripEventElement.setClickFavoriteHandler(this._handleFavoriteClick);
 
@@ -71,6 +75,7 @@ export default class Point {
   _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this._eventEditElement.reset(this._tripEvent);
       this._repleceFormEditToPoint();
     }
   }
@@ -92,7 +97,18 @@ export default class Point {
     this._replecePointToFormEdit();
   }
 
-  _handleRollupButtonOrSubmitFormEditClick() {
+  _handleCancelFormEditClick() {
+    this._eventEditElement.reset(this._tripEvent);
+    this._repleceFormEditToPoint();
+  }
+
+  _handleRollupButtonFormEditClick() {
+    this._eventEditElement.reset(this._tripEvent);
+    this._repleceFormEditToPoint();
+  }
+
+  _handleSubmitFormEditClick(tripEvent) {
+    this._changeData(tripEvent);
     this._repleceFormEditToPoint();
   }
 

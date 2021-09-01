@@ -1,11 +1,8 @@
-import {humanizeDateForPoint} from '../utils/point-util.js';
+import {humanizeDateForPoint, pointTypeIcon} from '../utils/point-util.js';
 import SmartView from './smart.js';
 
 const EMPTY_EVENT = {
-  type: {
-    typePoint: 'Flight',
-    iconPoint: 'img/icons/flight.png',
-  },
+  type: 'flight',
   availableCities: [
     'Salzburg',
     'Washington',
@@ -23,31 +20,28 @@ const EMPTY_EVENT = {
     name: '',
     pictures: [],
   },
+  destinationCity: '',
   dateFrom: new Date(),
   dateTo: new Date(),
   basePrice: '',
-  offers: [],
-};
-
-const forRenderOffers = {
-  'Upgrade to a business class': 'business',
-  'Choose the radio station': 'radio',
-  'Add luggage': 'luggage',
-  'Switch to comfort': 'comfort',
-  'Add meal': 'meal',
 };
 
 const createOptionForCity = (city) => (`<option value="${city}">${city}</option>`);
 
-const createOfferCheckbox = (offer) => (`<div class="event__available-offers">
-     <div class="event__offer-selector">
-       <input class="event__offer-checkbox  visually-hidden" id="event-offer-${forRenderOffers[offer.title]}-1" type="checkbox" name="event-offer-${forRenderOffers[offer.title]}">
-       <label class="event__offer-label" for="event-offer-${forRenderOffers[offer.title]}-1">
-         <span class="event__offer-title">${offer.title}</span>
-         &plus;&euro;&nbsp;
-         <span class="event__offer-price">${offer.price}</span>
-       </label>
-     </div>`);
+const getOffers = (offers, type) => offers.find((offer) => offer.type === type);
+
+const createOfferCheckbox = (offer) => {
+  const wordForAttribute = offer.title.split(' ').pop();
+  return `<div class="event__available-offers">
+  <div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${wordForAttribute}-1" type="checkbox" name="event-offer-${wordForAttribute}"${offer.isChecked ? 'checked' : ''}>
+    <label class="event__offer-label" for="event-offer-${wordForAttribute}-1">
+      <span class="event__offer-title">${offer.title}</span>
+      &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </label>
+  </div>`;
+} ;
 
 const createEventSectionOffers = (offers) => {
   if (offers && offers.length !== 0) {
@@ -93,13 +87,21 @@ const createEventSectionDestination = (destination) => {
   return '';
 };
 
-const createPointEditTemplate = (eventOfTrip) => {
-  const {type, availableCities, destination, dateFrom, dateTo, basePrice, offers} = eventOfTrip;
+const getDestination = (destination, destinationCity) => destination.find((destinationAvailable) => destinationAvailable.nameCity === destinationCity);
+
+const createDestination = (destination, destinationCity) => {
+  const destinationFotPoint = getDestination(destination, destinationCity);
+  const destinationConteiner = createEventSectionDestination(destinationFotPoint);
+  return destinationConteiner;
+};
+
+const createPointEditTemplate = (conditionData) => {
+  const {type, availableCities, destination, dateFrom, dateTo, basePrice, offers, destinationCity} = conditionData;
   const listOptionCities = availableCities.map((city) => createOptionForCity(city)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
-  const availableOffersConteiner = createEventSectionOffers(offers);
-  const destinationConteiner = createEventSectionDestination(destination);
+  const offersForPointType = getOffers(offers, type);
+  const offersConteiner = createEventSectionOffers(offersForPointType.offersAvailable);
 
   return `<li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
@@ -107,7 +109,7 @@ const createPointEditTemplate = (eventOfTrip) => {
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
-        <img class="event__type-icon" width="17" height="17" src="${type.iconPoint}" alt="Event type icon">
+        <img class="event__type-icon" width="17" height="17" src="${pointTypeIcon[type]}" alt="Event type icon">
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -170,9 +172,9 @@ const createPointEditTemplate = (eventOfTrip) => {
 
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination-1">
-        ${type.typePoint}
+      ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationCity ? destinationCity : 'Сhoose a city'}" list="destination-list-1">
       <datalist id="destination-list-1">
       ${listOptionCities}
       </datalist>
@@ -201,8 +203,8 @@ const createPointEditTemplate = (eventOfTrip) => {
   </button>
   </header>
   <section class="event__details">
-    ${availableOffersConteiner}
-    ${destinationConteiner}
+    ${offersConteiner}
+    ${destinationCity ? createDestination(destination, destinationCity) : ''}
   </section>
 </form>
 </li>`;
@@ -211,31 +213,132 @@ const createPointEditTemplate = (eventOfTrip) => {
 export default class PointEdit extends SmartView {
   constructor(tripEvent = EMPTY_EVENT) {
     super();
-    this._tripEvent = tripEvent;
-    this._clickHandler = this._clickHandler.bind(this);
+    this._conditionData = PointEdit.parseInformationToCondition(tripEvent);
+
+    this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
+    this._cancelClickHandler = this._cancelClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
+    this._typeGroupClickHandler = this._typeGroupClickHandler.bind(this);
+    this._checkboxOfferClickHandler = this._checkboxOfferClickHandler.bind(this);
+    this._destinationClickHandler = this._destinationClickHandler.bind(this);
+
+    this._serInnerHandlers();
   }
 
   getTemplate() {
-    return createPointEditTemplate(this._tripEvent);
+    return createPointEditTemplate(this._conditionData, this._offers);
   }
 
-  _clickHandler() {
+  _serInnerHandlers() {
+    this.getElement().querySelector('.event__type-group').addEventListener('click', this._typeGroupClickHandler);
+    this.getElement().querySelector('.event__details').addEventListener('click', this._checkboxOfferClickHandler);
+    this.getElement().querySelector('#event-destination-1').addEventListener('change', this._destinationClickHandler);
+  }
+
+  _destinationClickHandler(evt) {
+    this.updateData({
+      destinationCity: evt.target.value,
+    });
+  }
+
+  _checkboxOfferClickHandler(evt) {
+    if (evt.target.nodeName === 'INPUT') {
+      const offersForPointType = this._conditionData.offers.find((offer) => offer.type.includes(this._conditionData.type));
+      const IndexOffersForPointType = this._conditionData.offers.findIndex((offer) => offer.type.includes(this._conditionData.type));
+      const IndexofferAvailable = offersForPointType.offersAvailable.findIndex((offerAvailable) =>  offerAvailable.title.includes(evt.target.labels[0].childNodes[1].innerText));
+      const oldOffersAvailable = this._conditionData.offers[IndexOffersForPointType].offersAvailable;
+
+      const offerAvailableChecked = Object.assign(
+        {},
+        offersForPointType.offersAvailable[IndexofferAvailable],
+        {
+          isChecked: evt.target.checked,
+        },
+      );
+
+      const newOffersAvailable = [
+        ...oldOffersAvailable.slice(0, IndexofferAvailable),
+        offerAvailableChecked,
+        ...oldOffersAvailable.slice(IndexofferAvailable + 1),
+      ];
+
+      const newOffersForPointType = Object.assign(
+        {},
+        offersForPointType,
+        {
+          offersAvailable: newOffersAvailable,
+        },
+      );
+
+      const newOffers = [
+        ...this._conditionData.offers.slice(0, IndexOffersForPointType),
+        newOffersForPointType,
+        ...this._conditionData.offers.slice(IndexOffersForPointType + 1),
+      ];
+
+      this.updateData({
+        offers: newOffers,
+      });
+    }
+  }
+
+  _typeGroupClickHandler(evt) {
+    if (evt.target.value) {
+      for (let i = 0; i < this._conditionData.offers.length; i++) {
+        this._conditionData.offers[i].offersAvailable.forEach((offerAvailable) => delete offerAvailable.isChecked);
+      }
+
+      this.updateData({
+        type: evt.target.value,
+      });
+    }
+  }
+
+  _cancelClickHandler() {
+    this._callback.cancelClick();
+  }
+
+  _rollupButtonClickHandler() {
     this._callback.editClick();
   }
 
   _formSubmitHandler(evt) {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(PointEdit.parseConditionToInformation(this._conditionData));
   }
 
-  setClickHandler(callback) {
+  reset(tripEvent) {
+    this.updateData(PointEdit.parseInformationToCondition(tripEvent));
+  }
+
+  restoreHandlers() {
+    this._serInnerHandlers();
+    this.setRollupButtonClickHandler(this._callback.editClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setCancelClickHandler(this._callback.cancelClick);
+  }
+
+  setCancelClickHandler(callback) {
+    this._callback.cancelClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._cancelClickHandler);
+  }
+
+  setRollupButtonClickHandler(callback) {
     this._callback.editClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupButtonClickHandler);
   }
 
   setFormSubmitHandler(callback) {
     this._callback.formSubmit = callback;
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
+  }
+
+  static parseInformationToCondition(information) {
+    return Object.assign({}, information);
+  }
+
+  static parseConditionToInformation(condition) {
+    condition = Object.assign({}, condition);
+    return condition;
   }
 }

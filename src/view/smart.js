@@ -6,7 +6,7 @@ export default class Smart extends Abstract {
     this._conditionData = {};
   }
 
-  updateData(update, justConditionDataUpdating) {
+  updateData(update) {
     if(!update) {
       return;
     }
@@ -16,10 +16,6 @@ export default class Smart extends Abstract {
       this._conditionData,
       update,
     );
-
-    if (justConditionDataUpdating) {
-      return;
-    }
 
     this.updateElement();
   }

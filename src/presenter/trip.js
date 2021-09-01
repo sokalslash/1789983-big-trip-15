@@ -42,7 +42,7 @@ export default class Trip {
   _handlePointChange(updateEvent) {
     this._tripEvents = updateItem(this._tripEvents, updateEvent);
     this._sourceTripEvents = updateItem(this._sourceTripEvents, updateEvent);
-    this._pointPresenter.get(updateEvent.id).init(updateEvent);
+    this._pointPresenter.get(updateEvent.id).init(updateEvent, this._offers);
   }
 
   _renderNoEvents() {
