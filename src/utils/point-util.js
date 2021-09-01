@@ -30,6 +30,16 @@ export const isPast = (date) => dayjs().isAfter(dayjs(date), 'D');
 
 export const isFutures = (date) => dayjs().isBefore(dayjs(date), 'D');
 
+export const sortDay = (pointA, pointB) => {
+  if (pointA.dateFrom > pointB.dateFrom) {
+    return 1;
+  }
+  if (pointA.dateFrom < pointB.dateFrom) {
+    return -1;
+  }
+  return 0;
+};
+
 export const sortTime = (pointA, pointB) => {
   const durationPointA = pointA.dateTo.diff(pointA.dateFrom);
   const durationPointB = pointB.dateTo.diff(pointB.dateFrom);

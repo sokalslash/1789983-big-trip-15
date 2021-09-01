@@ -4,7 +4,7 @@ import EventsSortView from '../view/sort.js';
 import PointPresenter from './point-presenter.js';
 import {RenderPosition, render} from '../utils/render.js';
 import {updateItem} from '../utils/common';
-import {SortType, sortTime, sortPrice} from '../utils/point-util.js';
+import {SortType, sortTime, sortPrice, sortDay} from '../utils/point-util.js';
 
 const NO_EVENTS = 0;
 
@@ -24,6 +24,7 @@ export default class Trip {
   }
 
   init(tripEvents) {
+    tripEvents.sort(sortDay);
     this._tripEvents = tripEvents.slice();
     this._sourceTripEvents = tripEvents.slice();
 
