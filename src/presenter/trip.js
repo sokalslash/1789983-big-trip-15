@@ -23,16 +23,18 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  init(tripEvents) {
+  init(tripEvents, destinations, offers) {
     tripEvents.sort(sortDay);
     this._tripEvents = tripEvents.slice();
     this._sourceTripEvents = tripEvents.slice();
+    this._destinations = destinations;
+    this._offers = offers;
 
     if(this._tripEvents.length === NO_EVENTS) {
       this._renderNoEvents();
     } else {
       this._renderSort();
-      this._renderTripEvents(this._tripEvents);
+      this._renderTripEvents(this._tripEvents, this._destinations, this._offers);
     }
   }
 
@@ -43,7 +45,7 @@ export default class Trip {
   _handlePointChange(updateEvent) {
     this._tripEvents = updateItem(this._tripEvents, updateEvent);
     this._sourceTripEvents = updateItem(this._sourceTripEvents, updateEvent);
-    this._pointPresenter.get(updateEvent.id).init(updateEvent, this._offers);
+    this._pointPresenter.get(updateEvent.id).init(updateEvent, this._destinations, this._offers);
   }
 
   _renderNoEvents() {
@@ -55,9 +57,9 @@ export default class Trip {
     this._eventsSort.setSortTypeChangeHandler(this._handleSortTypeChange);
   }
 
-  _renderEvent(tripEvent) {
+  _renderEvent(tripEvent, destinations, offers) {
     const pointPresenter = new PointPresenter(this._listEventsElement, this._handlePointChange, this._handleModeChange);
-    pointPresenter.init(tripEvent);
+    pointPresenter.init(tripEvent, destinations, offers);
     this._pointPresenter.set(tripEvent.id, pointPresenter);
   }
 
@@ -66,10 +68,10 @@ export default class Trip {
     this._pointPresenter.clear();
   }
 
-  _renderTripEvents(tripEvents) {
+  _renderTripEvents(tripEvents, destinations, offers) {
     render(this._tripEventsElement, this._listEventsElement, RenderPosition.BEFOREEND);
     for (let i = 0; i < tripEvents.length; i++) {
-      this._renderEvent(tripEvents[i]);
+      this._renderEvent(tripEvents[i], destinations, offers);
     }
   }
 

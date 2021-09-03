@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
 import {getRandomInteger} from '../utils/common.js';
 import {getOffers} from './offers.js';
-import {getDestination} from './destination';
+import {getDestinations} from './destination';
 
 const MAX_DATE_GAP = 151200;
 const ONE_MINUTE = 60000;
@@ -16,27 +16,6 @@ const cities = [
   'Dubai',
   'Denver',
 ];
-
-const generateType = () => {
-
-  const pointType = [
-    'taxi',
-    'bus',
-    'train',
-    'ship',
-    'drive',
-    'flight',
-    'check-in',
-    'sightseeing',
-    'restaurant',
-  ];
-
-  const randomIndex = getRandomInteger(0, pointType.length-1);
-
-  const type = pointType[randomIndex];
-
-  return type;
-};
 
 const generateDateFrom = () => {
   const secondGapForFrom = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
@@ -70,11 +49,12 @@ const generateDifferenceDate = (endDate, startDate) => {
 const generatePointTrip = () => {
   const newDateFrom = generateDateFrom();
   const newDateTo = generateDateTo(newDateFrom);
+  const destinations = getDestinations();
+  const someOffers = getOffers();
   return {
     id: nanoid(),
-    type: generateType(),
-    offers: getOffers(),
-    destination: getDestination(),
+    offers: someOffers[getRandomInteger(0, someOffers.length-1)],
+    destination: destinations[getRandomInteger(0, destinations.length-1)],
     dateFrom: newDateFrom,
     dateTo:newDateTo,
     dateDifference: generateDifferenceDate(newDateTo, newDateFrom),

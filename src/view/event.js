@@ -1,20 +1,21 @@
 import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent, pointTypeIcon} from '../utils/point-util.js';
 import AbstractView from './abstract.js';
 
-const createOfferListItemTemplete = (offer) => (`<li class="event__offer">
-  <span class="event__offer-title">${offer.title}</span>
-  &plus;&euro;&nbsp;
-  <span class="event__offer-price">${offer.price}</span>
-</li>`);
+const createOfferListItemTemplete = (offer) => {
+  if (offer.isChecked) {
+    return `<li class="event__offer">
+    <span class="event__offer-title">${offer.title}</span>
+    &plus;&euro;&nbsp;
+    <span class="event__offer-price">${offer.price}</span>
+    </li>`;
+  }
+};
 
 const createOffersContainer = (offers) => {
   if (offers && offers.length !== 0) {
-    const offersList = [];
-    for (let i = 0; i < offers.length; i++) {
-      offersList.push(offers[i].offersAvailable.map((offerAvaileble) => createOfferListItemTemplete(offerAvaileble)).join(' '));
-    }
+    const offersList = offers.map((offer) => createOfferListItemTemplete(offer)).join('');
     return   `<h4 class="visually-hidden">Offers:</h4>
-    <ul class="event__selected-offers">${offersList.join(' ')}</ul>`;
+    <ul class="event__selected-offers">${offersList}</ul>`;
   }
   return '';
 };
@@ -28,23 +29,23 @@ const isFavorite = (flag) => {
 
 const createTripEventTemplate = (tripEvents) => {
   if (tripEvents && tripEvents.length !== 0) {
-    const {dateFrom, dateTo, dateDifference, type, basePrice, offers, favorite, destinationCity = 'Сhoose a city'} = tripEvents;
+    const {dateFrom, dateTo, dateDifference, type, basePrice, offers, favorite, destination, city} = tripEvents;
     const dateForStart = humanizeDateForEventAndInfo(dateFrom);
     const dateForAttributeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForAttributeTimeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForTimeStart = humanizeTimeForEvent(dateFrom);
     const dateForAttributeTimeAnd = humanizeDateForAttributeEvent(dateTo);
     const dateForTimeAnd = humanizeTimeForEvent(dateTo);
-    const offersContainer = createOffersContainer(offers);
+    const offersContainer = createOffersContainer(offers.offers);
     const favoriteActive = isFavorite(favorite);
 
     return `<li class="trip-events__item">
   <div class="event">
     <time class="event__date" datetime="${dateForAttributeStart}">${dateForStart}</time>
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src=${pointTypeIcon[type]} alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src=${pointTypeIcon[offers.type]} alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} ${destinationCity}</h3>
+    <h3 class="event__title">${offers.type} ${destination.name}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="${dateForAttributeTimeStart}">${dateForTimeStart}</time>

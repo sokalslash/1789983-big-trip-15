@@ -1,7 +1,7 @@
 export const getOffers = () => [
   {
     type: 'taxi',
-    offersAvailable: [
+    offers: [
       {
         title: 'Upgrade to a business class',
         price: 120,
@@ -15,7 +15,7 @@ export const getOffers = () => [
 
   {
     type: 'bus',
-    offersAvailable: [
+    offers: [
       {
         title: 'Extra space for luggage',
         price: 50,
@@ -25,7 +25,7 @@ export const getOffers = () => [
 
   {
     type: 'train',
-    offersAvailable: [
+    offers: [
       {
         title: 'Tea or coffee',
         price: 5,
@@ -35,7 +35,7 @@ export const getOffers = () => [
 
   {
     type: 'ship',
-    offersAvailable: [
+    offers: [
       {
         title: 'Include breakfast',
         price: 25,
@@ -53,12 +53,12 @@ export const getOffers = () => [
 
   {
     type: 'drive',
-    offersAvailable: [],
+    offers: [],
   },
 
   {
     type: 'flight',
-    offersAvailable: [
+    offers: [
       {
         title: 'Upgrade to a business class',
         price: 200,
@@ -68,7 +68,7 @@ export const getOffers = () => [
 
   {
     type: 'check-in',
-    offersAvailable: [
+    offers: [
       {
         title: 'Wi-fi',
         price: 15,
@@ -90,7 +90,7 @@ export const getOffers = () => [
 
   {
     type: 'sightseeing',
-    offersAvailable: [
+    offers: [
       {
         title: 'Bike trip',
         price: 80,
@@ -100,7 +100,7 @@ export const getOffers = () => [
 
   {
     type: 'restaurant',
-    offersAvailable: [],
+    offers: [],
   },
 ];
 

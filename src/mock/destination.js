@@ -25,29 +25,29 @@ const picturesDestination = [
   },
 ];
 
-export const getDestination = () => [
+export const getDestinations = () => [
   {
-    nameCity: 'Salzburg',
+    name: 'Salzburg',
     description: getArrayElements(descriptionsDestination),
     pictures: getArrayElements(picturesDestination),
   },
   {
-    nameCity: 'Washington',
+    name: 'Washington',
     description: getArrayElements(descriptionsDestination),
     pictures: getArrayElements(picturesDestination),
   },
   {
-    nameCity: 'Vancouver',
+    name: 'Vancouver',
     description: getArrayElements(descriptionsDestination),
     pictures: getArrayElements(picturesDestination),
   },
   {
-    nameCity: 'Dubai',
+    name: 'Dubai',
     description: getArrayElements(descriptionsDestination),
     pictures: getArrayElements(picturesDestination),
   },
   {
-    nameCity: 'Denver',
+    name: 'Denver',
     description: getArrayElements(descriptionsDestination),
     pictures: getArrayElements(picturesDestination),
   },

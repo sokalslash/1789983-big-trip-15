@@ -25,14 +25,14 @@ export default class Point {
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
   }
 
-  init(tripEvent) {
+  init(tripEvent, destinations, offers) {
     this._tripEvent = tripEvent;
 
     const prevTripEventElement = this._tripEventElement;
     const prevEventEditElement = this._eventEditElement;
 
     this._tripEventElement = new TripEventView(tripEvent);
-    this._eventEditElement = new PointEditView(tripEvent);
+    this._eventEditElement = new PointEditView(tripEvent, destinations, offers);
 
     this._tripEventElement.setRollupButtonClickHandler(this._handleRollupButtonPointClick);
 
