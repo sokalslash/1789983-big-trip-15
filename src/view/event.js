@@ -1,11 +1,15 @@
-import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent} from '../utils/point.js';
+import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent, pointTypeIcon} from '../utils/point-util.js';
 import AbstractView from './abstract.js';
 
-const createOfferListItemTemplete = (offer) => (`<li class="event__offer">
-  <span class="event__offer-title">${offer.title}</span>
-  &plus;&euro;&nbsp;
-  <span class="event__offer-price">${offer.price}</span>
-</li>`);
+const createOfferListItemTemplete = (offer) => {
+  if (offer.isChecked) {
+    return `<li class="event__offer">
+    <span class="event__offer-title">${offer.title}</span>
+    &plus;&euro;&nbsp;
+    <span class="event__offer-price">${offer.price}</span>
+    </li>`;
+  }
+};
 
 const createOffersContainer = (offers) => {
   if (offers && offers.length !== 0) {
@@ -23,25 +27,25 @@ const isFavorite = (flag) => {
   return '';
 };
 
-const createTripEventTemplate = (eventData) => {
-  if (eventData && eventData.length !== 0) {
-    const {dateFrom, dateTo, dateDifference, type, destination, basePrice, offers, favorite} = eventData;
+const createTripEventTemplate = (tripEvents) => {
+  if (tripEvents && tripEvents.length !== 0) {
+    const {dateFrom, dateTo, dateDifference, basePrice, offers, favorite, destination} = tripEvents;
     const dateForStart = humanizeDateForEventAndInfo(dateFrom);
     const dateForAttributeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForAttributeTimeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForTimeStart = humanizeTimeForEvent(dateFrom);
     const dateForAttributeTimeAnd = humanizeDateForAttributeEvent(dateTo);
     const dateForTimeAnd = humanizeTimeForEvent(dateTo);
-    const offersContainer = createOffersContainer(offers);
+    const offersContainer = createOffersContainer(offers.offers);
     const favoriteActive = isFavorite(favorite);
 
     return `<li class="trip-events__item">
   <div class="event">
     <time class="event__date" datetime="${dateForAttributeStart}">${dateForStart}</time>
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src=${type.iconPoint} alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src=${pointTypeIcon[offers.type]} alt="Event type icon">
     </div>
-    <h3 class="event__title">${type.typePoint} ${destination.name}</h3>
+    <h3 class="event__title">${offers.type} ${destination.name}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="${dateForAttributeTimeStart}">${dateForTimeStart}</time>
@@ -70,28 +74,28 @@ const createTripEventTemplate = (eventData) => {
 };
 
 export default class TripEvent extends AbstractView {
-  constructor(eventOfTrip) {
+  constructor(tripEvent) {
     super();
-    this._eventOfTrip = eventOfTrip;
-    this._clickHandler = this._clickHandler.bind(this);
+    this._tripEvent = tripEvent;
+    this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createTripEventTemplate(this._eventOfTrip);
+    return createTripEventTemplate(this._tripEvent);
   }
 
-  _clickHandler() {
-    this._callback.pointClick();
+  _rollupButtonClickHandler() {
+    this._callback.rollupButtonClick();
   }
 
   _favoriteClickHandler() {
     this._callback.favoriteClick();
   }
 
-  setClickHandler(callback) {
-    this._callback.pointClick = callback;
-    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._clickHandler);
+  setRollupButtonClickHandler(callback) {
+    this._callback.rollupButtonClick = callback;
+    this.getElement().querySelector('.event__rollup-btn').addEventListener('click', this._rollupButtonClickHandler);
   }
 
   setClickFavoriteHandler(callback) {

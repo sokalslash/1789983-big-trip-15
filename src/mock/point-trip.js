@@ -1,6 +1,8 @@
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
-import {getRandomInteger, getArrayElements} from '../utils/common.js';
+import {getRandomInteger} from '../utils/common.js';
+import {getOffers} from './offers.js';
+import {getDestinations} from './destination';
 
 const MAX_DATE_GAP = 151200;
 const ONE_MINUTE = 60000;
@@ -10,99 +12,10 @@ const ONE_DAY = 86400000;
 const cities = [
   'Salzburg',
   'Washington',
-  'Cairo',
-  'Galway',
-  'Bonn',
-  'La-Paz',
-  'Kochi',
   'Vancouver',
   'Dubai',
   'Denver',
 ];
-
-const generateType = () => {
-
-  const typeObject = {
-    'Taxi': 'img/icons/taxi.png',
-    'Bus': 'img/icons/bus.png',
-    'Train': 'img/icons/train.png',
-    'Ship': 'img/icons/ship.png',
-    'Drive': 'img/icons/drive.png',
-    'Flight': 'img/icons/flight.png',
-    'Check-in': 'img/icons/check-in.png',
-    'Sightseeing': 'img/icons/sightseeing.png',
-    'Restaurant': 'img/icons/restaurant.png',
-  };
-
-  const typeArray = Object.entries(typeObject);
-
-  const randomIndex = getRandomInteger(0, typeArray.length-1);
-
-  const type = typeArray[randomIndex];
-
-  return {
-    typePoint: type[0],
-    iconPoint:  type[1],
-  };
-};
-
-const offers = [
-  {
-    title: 'Upgrade to a business class',
-    price: 120,
-  },
-  {
-    title: 'Choose the radio station',
-    price: 60,
-  },
-  {
-    title: 'Add luggage',
-    price: 50,
-  },
-  {
-    title: 'Switch to comfort',
-    price: 80,
-  },
-  {
-    title: 'Add meal',
-    price: 15,
-  },
-];
-
-const generateDestination = () => {
-  const descriptionsDestination = [
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    'Cras aliquet varius magna, non porta ligula feugiat eget.',
-    'Fusce tristique felis at fermentum pharetra.',
-    'Aliquam id orci ut lectus varius viverra.',
-    'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
-  ];
-
-  const randomIndexForDescripyionPictures = getRandomInteger(0, descriptionsDestination.length-1);
-
-  const picturesDestination = [
-    {
-      src: `http://picsum.photos/248/152?r${Math.random()}`,
-      description: descriptionsDestination[randomIndexForDescripyionPictures],
-    },
-    {
-      src: `http://picsum.photos/248/152?r${Math.random()}`,
-      description: descriptionsDestination[randomIndexForDescripyionPictures],
-    },
-    {
-      src: `http://picsum.photos/248/152?r${Math.random()}`,
-      description: descriptionsDestination[randomIndexForDescripyionPictures],
-    },
-  ];
-
-  const randomIndexForCities = getRandomInteger(0, cities.length-1);
-
-  return {
-    description: getArrayElements(descriptionsDestination),
-    name: cities[randomIndexForCities],
-    pictures: getArrayElements(picturesDestination),
-  };
-};
 
 const generateDateFrom = () => {
   const secondGapForFrom = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
@@ -134,14 +47,14 @@ const generateDifferenceDate = (endDate, startDate) => {
 };
 
 const generatePointTrip = () => {
-  const typePoint = generateType();
   const newDateFrom = generateDateFrom();
   const newDateTo = generateDateTo(newDateFrom);
+  const destinations = getDestinations();
+  const someOffers = getOffers();
   return {
     id: nanoid(),
-    type: typePoint,
-    offers: getArrayElements(offers),
-    destination: generateDestination(),
+    offers: someOffers[getRandomInteger(0, someOffers.length-1)],
+    destination: destinations[getRandomInteger(0, destinations.length-1)],
     dateFrom: newDateFrom,
     dateTo:newDateTo,
     dateDifference: generateDifferenceDate(newDateTo, newDateFrom),
