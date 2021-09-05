@@ -1,6 +1,29 @@
 import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent, pointTypeIcon} from '../utils/point-util.js';
 import AbstractView from './abstract.js';
 
+const ONE_MINUTE = 60000;
+const ONE_HOUR = 3600000;
+const ONE_DAY = 86400000;
+
+const generateDifferenceDate = (endDate, startDate) => {
+  const differenceMilliseconds = endDate.diff(startDate);
+  if (differenceMilliseconds < ONE_HOUR) {
+    const differenceMinutes = endDate.diff(startDate, 'minute');
+    return `${differenceMinutes}M`;
+  }
+  if (differenceMilliseconds < ONE_DAY) {
+    const hour = Math.floor(differenceMilliseconds / ONE_HOUR);
+    const minute = Math.floor((differenceMilliseconds - hour*60*60*1000) / ONE_MINUTE);
+    return `${hour}H ${minute}M`;
+  }
+  if (differenceMilliseconds > ONE_DAY) {
+    const day = Math.floor(differenceMilliseconds / ONE_DAY);
+    const hour = Math.floor((differenceMilliseconds - day*24*60*60*1000) / ONE_HOUR);
+    const minute = Math.floor((differenceMilliseconds - day*24*60*60*1000 - hour*60*60*1000) / ONE_MINUTE);
+    return `${day}D ${hour}H ${minute}M`;
+  }
+};
+
 const createOfferListItemTemplete = (offer) => {
   if (offer.isChecked) {
     return `<li class="event__offer">
@@ -29,7 +52,7 @@ const isFavorite = (flag) => {
 
 const createTripEventTemplate = (tripEvents) => {
   if (tripEvents && tripEvents.length !== 0) {
-    const {dateFrom, dateTo, dateDifference, basePrice, offers, favorite, destination} = tripEvents;
+    const {dateFrom, dateTo, basePrice, offers, favorite, destination} = tripEvents;
     const dateForStart = humanizeDateForEventAndInfo(dateFrom);
     const dateForAttributeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForAttributeTimeStart = humanizeDateForAttributeEvent(dateFrom);
@@ -38,6 +61,7 @@ const createTripEventTemplate = (tripEvents) => {
     const dateForTimeAnd = humanizeTimeForEvent(dateTo);
     const offersContainer = createOffersContainer(offers.offers);
     const favoriteActive = isFavorite(favorite);
+    const dateDifference = generateDifferenceDate(dateTo, dateFrom);
 
     return `<li class="trip-events__item">
   <div class="event">

@@ -1,5 +1,8 @@
-import {humanizeDateForPoint, pointTypeIcon} from '../utils/point-util.js';
+import {humanizeDateForPoint, humanizeDateForAttributeEvent, pointTypeIcon} from '../utils/point-util.js';
 import SmartView from './smart.js';
+import flatpickr from 'flatpickr';
+
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const EMPTY_EVENT = {
   type: 'flight',
@@ -208,8 +211,12 @@ export default class PointEdit extends SmartView {
     this._checkboxOfferClickHandler = this._checkboxOfferClickHandler.bind(this);
     this._destinationChangekHandler = this._destinationChangekHandler.bind(this);
     this._getDestinationForUpdate = this._getDestinationForUpdate.bind(this);
+    this._endTimeChangeHandler = this._endTimeChangeHandler.bind(this);
+    this._startTimeChangeHandler = this._startTimeChangeHandler.bind(this);
 
     this._setInnerHandlers();
+    this._setDatepickerForStart();
+    this._setDatepickerForEnd();
   }
 
   getTemplate() {
@@ -286,12 +293,61 @@ export default class PointEdit extends SmartView {
     this._callback.formSubmit(PointEdit.parseConditionToInformation(this._conditionData));
   }
 
+  _setDatepickerForStart() {
+    if (this._datapickerForStart) {
+      this._datapickerForStart.destroy();
+      this._datapickerForStart = null;
+    }
+
+    this._datapickerForStart = flatpickr(
+      this.getElement().querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'j/m/Y H:i',
+        defaultDate: humanizeDateForPoint(this._conditionData.dateFrom),
+        onChange: this._startTimeChangeHandler,
+      },
+    );
+  }
+
+  _setDatepickerForEnd() {
+    if (this._datapickerForEnd) {
+      this._datapickerForEnd.destroy();
+      this._datapickerForEnd = null;
+    }
+
+    this._datapickerForEnd = flatpickr(
+      this.getElement().querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        minDate: humanizeDateForAttributeEvent(this._conditionData.dateFrom),
+        dateFormat: 'j/m/Y H:i',
+        defaultDate: humanizeDateForPoint(this._conditionData.dateTo),
+        onChange: this._endTimeChangeHandler,
+      },
+    );
+  }
+
+  _startTimeChangeHandler([userData]) {
+    this.updateData({
+      dateFrom: userData,
+    });
+  }
+
+  _endTimeChangeHandler([userData]) {
+    this.updateData({
+      dateTo: userData,
+    });
+  }
+
   reset(tripEvent) {
     this.updateData(PointEdit.parseInformationToCondition(tripEvent));
   }
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepickerForStart();
+    this._setDatepickerForEnd();
     this.setRollupButtonClickHandler(this._callback.editClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setCancelClickHandler(this._callback.cancelClick);

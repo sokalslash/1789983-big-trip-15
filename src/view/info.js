@@ -14,19 +14,8 @@ const createNameTrip = (tripEvents) => {
      ... &mdash; ${tripEvents[tripEvents.length-1].destination.name}</h1>`;
 };
 
-// const calculateOffersCost = (points) => {
-//   const offersCost = [];
-//   for (const point of points) {
-//     if (point.offers) {
-//       offersCost.push(point.offers.reduce((accumulator, element) => accumulator + element.price, 0));
-//     }
-//   }
-//   return offersCost.reduce((accumulator, element) => accumulator + element, 0);
-// };
-
 const createTripInfoTemplate = (tripEvents) => {
   const tripInfoCost = tripEvents.reduce((accumulator, point) => accumulator + point.basePrice, 0);
-  //const offersConst = calculateOffersCost(tripEvents);
   const totalTripInfoCost = tripInfoCost;
   if (tripEvents.length !== 0) {
     const {dateFrom} = tripEvents[0];

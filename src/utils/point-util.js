@@ -18,7 +18,7 @@ export const pointTypeIcon = {
   'restaurant': 'img/icons/restaurant.png',
 };
 
-export const humanizeDateForPoint = (someDate) => dayjs(someDate).format('MM/DD/YY HH:mm');
+export const humanizeDateForPoint = (someDate) => dayjs(someDate).format('DD/MM/YYYY HH:mm');
 
 export const humanizeDateForEventAndInfo = (someDate) => dayjs(someDate).format('D MMM');
 
