@@ -1,6 +1,7 @@
 import TripEventView from '../view/event.js';
 import PointEditView from '../view/point-view.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
+import {UserAction, UpdateType} from '..//utils/common.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -108,12 +109,14 @@ export default class Point {
   }
 
   _handleSubmitFormEditClick(tripEvent) {
-    this._changeData(tripEvent);
+    this._changeData(UserAction.UPDATE_POINT, UpdateType.MAJOR, tripEvent);
     this._repleceFormEditToPoint();
   }
 
   _handleFavoriteClick() {
     this._changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
       Object.assign(
         {},
         this._tripEvent,
