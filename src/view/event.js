@@ -1,4 +1,4 @@
-import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent, pointTypeIcon} from '../utils/point-util.js';
+import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent, pointTypeIcon, generateDifferenceDate} from '../utils/point-util.js';
 import AbstractView from './abstract.js';
 
 const createOfferListItemTemplete = (offer) => {
@@ -29,7 +29,7 @@ const isFavorite = (flag) => {
 
 const createTripEventTemplate = (tripEvents) => {
   if (tripEvents && tripEvents.length !== 0) {
-    const {dateFrom, dateTo, dateDifference, basePrice, offers, favorite, destination} = tripEvents;
+    const {dateFrom, dateTo, basePrice, offers, favorite, destination} = tripEvents;
     const dateForStart = humanizeDateForEventAndInfo(dateFrom);
     const dateForAttributeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForAttributeTimeStart = humanizeDateForAttributeEvent(dateFrom);
@@ -38,6 +38,7 @@ const createTripEventTemplate = (tripEvents) => {
     const dateForTimeAnd = humanizeTimeForEvent(dateTo);
     const offersContainer = createOffersContainer(offers.offers);
     const favoriteActive = isFavorite(favorite);
+    const dateDifference = generateDifferenceDate(dateTo, dateFrom);
 
     return `<li class="trip-events__item">
   <div class="event">

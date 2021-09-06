@@ -1,5 +1,9 @@
 import dayjs from 'dayjs';
 
+const ONE_MINUTE = 60000;
+const ONE_HOUR = 3600000;
+const ONE_DAY = 86400000;
+
 export const SortType = {
   TIME: 'sort-time',
   PRICE: 'sort-price',
@@ -18,13 +22,34 @@ export const pointTypeIcon = {
   'restaurant': 'img/icons/restaurant.png',
 };
 
-export const humanizeDateForPoint = (someDate) => dayjs(someDate).format('MM/DD/YY HH:mm');
+export const humanizeDateForPoint = (someDate) => dayjs(someDate).format('DD/MM/YYYY HH:mm');
 
 export const humanizeDateForEventAndInfo = (someDate) => dayjs(someDate).format('D MMM');
 
 export const humanizeTimeForEvent = (someDate) => dayjs(someDate).format('H:mm');
 
 export const humanizeDateForAttributeEvent = (someDate) => dayjs(someDate).format();
+
+export const generateDifferenceDate = (dateTo, dateFrom) => {
+  const endDate = dayjs(dateTo);
+  const startDate = dayjs(dateFrom);
+  const differenceMilliseconds = endDate.diff(startDate);
+  if (differenceMilliseconds < ONE_HOUR) {
+    const differenceMinutes = endDate.diff(startDate, 'minute');
+    return `${differenceMinutes}M`;
+  }
+  if (differenceMilliseconds < ONE_DAY) {
+    const hour = Math.floor(differenceMilliseconds / ONE_HOUR);
+    const minute = Math.floor((differenceMilliseconds - hour*60*60*1000) / ONE_MINUTE);
+    return `${hour}H ${minute}M`;
+  }
+  if (differenceMilliseconds > ONE_DAY) {
+    const day = Math.floor(differenceMilliseconds / ONE_DAY);
+    const hour = Math.floor((differenceMilliseconds - day*24*60*60*1000) / ONE_HOUR);
+    const minute = Math.floor((differenceMilliseconds - day*24*60*60*1000 - hour*60*60*1000) / ONE_MINUTE);
+    return `${day}D ${hour}H ${minute}M`;
+  }
+};
 
 export const isPast = (date) => dayjs().isAfter(dayjs(date), 'D');
 
