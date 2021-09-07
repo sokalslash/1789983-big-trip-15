@@ -184,7 +184,7 @@ const createPointEditTemplate = (conditionData) => {
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Cancel</button>
+    <button class="event__reset-btn" type="reset">Delete</button>
     <button class="event__rollup-btn" type="button">
     <span class="visually-hidden">Open event</span>
   </button>
@@ -203,9 +203,12 @@ export default class PointEdit extends SmartView {
     this._destinations = destinations;
     this._offers = offers;
     this._conditionData = PointEdit.parseInformationToCondition(tripEvent);
+    this._datapickerForStart = null;
+    this._datapickerForEnd = null;
+
 
     this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
-    this._cancelClickHandler = this._cancelClickHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._typeGroupClickHandler = this._typeGroupClickHandler.bind(this);
     this._checkboxOfferClickHandler = this._checkboxOfferClickHandler.bind(this);
@@ -217,6 +220,20 @@ export default class PointEdit extends SmartView {
     this._setInnerHandlers();
     this._setDatepickerForStart();
     this._setDatepickerForEnd();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this._datapickerForStart) {
+      this._datapickerForStart.destroy();
+      this._datapickerForStart = null;
+    }
+
+    if (this._datapickerForEnd) {
+      this._datapickerForEnd.destroy();
+      this._datapickerForEnd = null;
+    }
   }
 
   getTemplate() {
@@ -280,8 +297,8 @@ export default class PointEdit extends SmartView {
     }
   }
 
-  _cancelClickHandler() {
-    this._callback.cancelClick();
+  _deleteClickHandler() {
+    this._callback.deleteClick(PointEdit.parseConditionToInformation(this._conditionData));
   }
 
   _rollupButtonClickHandler() {
@@ -350,12 +367,12 @@ export default class PointEdit extends SmartView {
     this._setDatepickerForEnd();
     this.setRollupButtonClickHandler(this._callback.editClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setCancelClickHandler(this._callback.cancelClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
-  setCancelClickHandler(callback) {
-    this._callback.cancelClick = callback;
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._cancelClickHandler);
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._deleteClickHandler);
   }
 
   setRollupButtonClickHandler(callback) {

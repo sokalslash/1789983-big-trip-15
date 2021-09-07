@@ -20,7 +20,7 @@ export default class Point {
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._handleRollupButtonFormEditClick = this._handleRollupButtonFormEditClick.bind(this);
-    this._handleCancelFormEditClick = this._handleCancelFormEditClick.bind(this);
+    this._handleDeleteFormEditClick = this._handleDeleteFormEditClick.bind(this);
     this._handleSubmitFormEditClick = this._handleSubmitFormEditClick.bind(this);
     this._handleRollupButtonPointClick = this._handleRollupButtonPointClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -39,7 +39,7 @@ export default class Point {
 
     this._eventEditElement.setRollupButtonClickHandler(this._handleRollupButtonFormEditClick);
 
-    this._eventEditElement.setCancelClickHandler(this._handleCancelFormEditClick);
+    this._eventEditElement.setDeleteClickHandler(this._handleDeleteFormEditClick);
 
     this._eventEditElement.setFormSubmitHandler(this._handleSubmitFormEditClick);
 
@@ -98,9 +98,8 @@ export default class Point {
     this._replecePointToFormEdit();
   }
 
-  _handleCancelFormEditClick() {
-    this._eventEditElement.reset(this._tripEvent);
-    this._repleceFormEditToPoint();
+  _handleDeleteFormEditClick(tripEvent) {
+    this._changeData(UserAction.DELETE_POINT, UpdateType.MAJOR, tripEvent);
   }
 
   _handleRollupButtonFormEditClick() {
