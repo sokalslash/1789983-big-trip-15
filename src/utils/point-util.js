@@ -51,10 +51,6 @@ export const generateDifferenceDate = (dateTo, dateFrom) => {
   }
 };
 
-export const isPast = (date) => dayjs().isAfter(dayjs(date), 'D');
-
-export const isFutures = (date) => dayjs().isBefore(dayjs(date), 'D');
-
 export const sortDay = (pointA, pointB) => {
   if (dayjs(pointA.dateFrom).isAfter(dayjs(pointB.dateFrom))) {
     return 1;

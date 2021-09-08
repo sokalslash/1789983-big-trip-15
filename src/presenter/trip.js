@@ -5,12 +5,14 @@ import PointPresenter from './point-presenter.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 import {SortType, sortTime, sortPrice, sortDay} from '../utils/point-util.js';
 import {UserAction, UpdateType} from '../utils/common.js';
+import {filter} from '../utils/filter-util.js';
 
 const NO_EVENTS = 0;
 
 export default class Trip {
-  constructor(tripEventsElement, pointsModel) {
+  constructor(tripEventsElement, pointsModel, filterModel) {
     this._pointsModel = pointsModel;
+    this._filterModel = filterModel;
     this._tripEventsElement = tripEventsElement;
     this._pointPresenter = new Map();
     this._currentSortType = SortType.DAY;
@@ -25,6 +27,7 @@ export default class Trip {
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
     this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init(destinations, offers) {
@@ -35,13 +38,17 @@ export default class Trip {
   }
 
   _getPointsModel() {
+    const filterType = this._filterModel.getFilter();
+    const points = this._pointsModel.getPoints();
+    const filteredPoints = filter[filterType](points);
+
     switch (this._currentSortType) {
       case SortType.TIME:
-        return this._pointsModel.getPoints().slice().sort(sortTime);
+        return filteredPoints.sort(sortTime);
       case SortType.PRICE:
-        return this._pointsModel.getPoints().slice().sort(sortPrice);
+        return filteredPoints.sort(sortPrice);
       case SortType.DAY:
-        return this._pointsModel.getPoints().slice().sort(sortDay);
+        return filteredPoints.sort(sortDay);
     }
   }
 
@@ -88,7 +95,7 @@ export default class Trip {
       this._eventsSort = null;
     }
 
-    this._eventsSort = new EventsSortView();
+    this._eventsSort = new EventsSortView(this._currentSortType);
     render(this._tripEventsElement, this._eventsSort, RenderPosition.BEFOREEND);
     this._eventsSort.setSortTypeChangeHandler(this._handleSortTypeChange);
   }

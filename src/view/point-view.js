@@ -213,6 +213,7 @@ export default class PointEdit extends SmartView {
     this._typeGroupClickHandler = this._typeGroupClickHandler.bind(this);
     this._checkboxOfferClickHandler = this._checkboxOfferClickHandler.bind(this);
     this._destinationChangekHandler = this._destinationChangekHandler.bind(this);
+    this._priceChangekHandler = this._priceChangekHandler.bind(this);
     this._getDestinationForUpdate = this._getDestinationForUpdate.bind(this);
     this._endTimeChangeHandler = this._endTimeChangeHandler.bind(this);
     this._startTimeChangeHandler = this._startTimeChangeHandler.bind(this);
@@ -248,6 +249,13 @@ export default class PointEdit extends SmartView {
     this.getElement().querySelector('.event__type-group').addEventListener('click', this._typeGroupClickHandler);
     this.getElement().querySelector('.event__details').addEventListener('click', this._checkboxOfferClickHandler);
     this.getElement().querySelector('#event-destination-1').addEventListener('change', this._destinationChangekHandler);
+    this.getElement().querySelector('#event-price-1').addEventListener('change', this._priceChangekHandler);
+  }
+
+  _priceChangekHandler(evt) {
+    this.updateData({
+      basePrice: evt.target.value,
+    });
   }
 
   _destinationChangekHandler(evt) {
