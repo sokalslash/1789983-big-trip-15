@@ -1,11 +1,11 @@
 import ListEventsView from '../view/list-events.js';
-import NoEventsTripView from '../view/no-events.js';
+import NoTripEventsView from '../view/no-events.js';
 import EventsSortView from '../view/sort.js';
 import PointPresenter from './point-presenter.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 import {SortType, sortTime, sortPrice, sortDay} from '../utils/point-util.js';
 import {UserAction, UpdateType} from '../utils/common.js';
-import {filter} from '../utils/filter-util.js';
+import {filter, FilterType} from '../utils/filter-util.js';
 
 const NO_EVENTS = 0;
 
@@ -15,11 +15,13 @@ export default class Trip {
     this._filterModel = filterModel;
     this._tripEventsElement = tripEventsElement;
     this._pointPresenter = new Map();
+    this._filterType = FilterType.EVERYTHING;
     this._currentSortType = SortType.DAY;
 
-    this._listEventsElement = new ListEventsView();
-    this._noEventsTrip = new NoEventsTripView();
     this._eventsSort = null;
+    this._noTripEventsComponent = null;
+
+    this._listEventsElement = new ListEventsView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -38,9 +40,9 @@ export default class Trip {
   }
 
   _getPointsModel() {
-    const filterType = this._filterModel.getFilter();
+    this._filterType = this._filterModel.getFilter();
     const points = this._pointsModel.getPoints();
-    const filteredPoints = filter[filterType](points);
+    const filteredPoints = filter[this._filterType](points);
 
     switch (this._currentSortType) {
       case SortType.TIME:
@@ -87,7 +89,8 @@ export default class Trip {
   }
 
   _renderNoEvents() {
-    render(this._tripEventsElement, this._noEventsTrip, RenderPosition.BEFOREEND);
+    this._noTripEventsComponent = new NoTripEventsView(this._filterType);
+    render(this._tripEventsElement, this._noTripEventsComponent, RenderPosition.BEFOREEND);
   }
 
   _renderSort() {
@@ -133,7 +136,10 @@ export default class Trip {
 
     remove(this._listEventsElement);
     remove(this._eventsSort);
-    remove(this._noEventsTrip);
+
+    if (this._noTripEventsComponent) {
+      remove(this._noTripEventsComponent);
+    }
 
     if (resetSortType) {
       this._currentSortType = SortType.DAY;
@@ -142,7 +148,7 @@ export default class Trip {
 
   _renderTrip() {
     const points = this._getPointsModel();
-    if(this._pointsModel.getPoints().length === NO_EVENTS) {
+    if(points.length === NO_EVENTS) {
       this._renderNoEvents();
     } else {
       this._renderSort();
