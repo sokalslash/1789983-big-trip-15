@@ -1,6 +1,6 @@
 import EventsFiltersView from '../view/filters.js';
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
-import {filter, FilterType} from '../utils/filter-util.js';
+import {FilterType} from '../utils/filter-util.js';
 import {UpdateType} from '../utils/common.js';
 
 export default class Filter {
@@ -47,23 +47,18 @@ export default class Filter {
   }
 
   _getFilters() {
-    const points = this._pointsModel.getPoints();
-
     return [
       {
         type: FilterType.EVERYTHING,
         name: 'everything',
-        correspondingPointType: filter[FilterType.EVERYTHING](points),
       },
       {
         type: FilterType.FUTURES,
         name: 'futures',
-        correspondingPointType: filter[FilterType.FUTURES](points),
       },
       {
         type: FilterType.PAST,
         name: 'past',
-        correspondingPointType: filter[FilterType.PAST](points),
       },
     ];
   }

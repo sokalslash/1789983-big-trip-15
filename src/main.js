@@ -1,5 +1,4 @@
 import SiteMenuView from './view/menu.js';
-import TripInfoView from './view/info.js';
 import {generatePointTrip} from './mock/point-trip';
 import {getDestinations} from './mock/destination';
 import {getOffers} from './mock/offers.js';
@@ -25,10 +24,10 @@ pointsModel.setPoints(mocksPoints);
 
 const filterModel = new FilterModel();
 
-render(siteHeaderElement, new TripInfoView(mocksPoints), RenderPosition.AFTERBEGIN);
+//render(siteHeaderElement, new TripInfoView(mocksPoints), RenderPosition.AFTERBEGIN);
 render(siteMenuElement, new SiteMenuView(), RenderPosition.BEFOREEND);
 
-const tripPresenter = new TripPresenter(tripEventsElement, pointsModel, filterModel);
+const tripPresenter = new TripPresenter(tripEventsElement, siteHeaderElement, pointsModel, filterModel);
 tripPresenter.init(mocksDestinations, mocksOffers);
 
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, pointsModel);

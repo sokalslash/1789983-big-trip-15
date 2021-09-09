@@ -1,6 +1,7 @@
 import ListEventsView from '../view/list-events.js';
 import NoTripEventsView from '../view/no-events.js';
 import EventsSortView from '../view/sort.js';
+import TripInfoView from '../view/info.js';
 import PointPresenter from './point-presenter.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
 import {SortType, sortTime, sortPrice, sortDay} from '../utils/point-util.js';
@@ -10,18 +11,20 @@ import {filter, FilterType} from '../utils/filter-util.js';
 const NO_EVENTS = 0;
 
 export default class Trip {
-  constructor(tripEventsElement, pointsModel, filterModel) {
+  constructor(tripEventsElement, siteHeaderElement, pointsModel, filterModel) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._tripEventsElement = tripEventsElement;
+    this._siteHeaderElement = siteHeaderElement;
     this._pointPresenter = new Map();
     this._filterType = FilterType.EVERYTHING;
     this._currentSortType = SortType.DAY;
 
-    this._eventsSort = null;
+    this._eventsSortComponent = null;
     this._noTripEventsComponent = null;
 
-    this._listEventsElement = new ListEventsView();
+    this._listEventsComponent = new ListEventsView();
+    this._tripInfoComponent = null;
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -78,11 +81,11 @@ export default class Trip {
         this._pointPresenter.get(data.id).init(data, this._destinations, this._offers);
         break;
       case UpdateType.MINOR:
-        this._clearTrip();
+        this._clearTrip({resetSortType: true});
         this._renderTrip();
         break;
       case UpdateType.MAJOR:
-        this._clearTrip({resetSortType: true});
+        this._clearTrip({resetSortType: true, resetTripInfo: true});
         this._renderTrip();
         break;
     }
@@ -94,17 +97,26 @@ export default class Trip {
   }
 
   _renderSort() {
-    if (this._eventsSort !== null) {
-      this._eventsSort = null;
+    if (this._eventsSortComponent !== null) {
+      this._eventsSortComponent = null;
     }
 
-    this._eventsSort = new EventsSortView(this._currentSortType);
-    render(this._tripEventsElement, this._eventsSort, RenderPosition.BEFOREEND);
-    this._eventsSort.setSortTypeChangeHandler(this._handleSortTypeChange);
+    this._eventsSortComponent = new EventsSortView(this._currentSortType);
+    render(this._tripEventsElement, this._eventsSortComponent, RenderPosition.BEFOREEND);
+    this._eventsSortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+  }
+
+  _renderTripInfo(tripEvents) {
+    if (this._tripInfoComponent !== null) {
+      return;
+    }
+
+    this._tripInfoComponent = new TripInfoView(tripEvents);
+    render(this._siteHeaderElement, this._tripInfoComponent, RenderPosition.AFTERBEGIN);
   }
 
   _renderEvent(tripEvent, destinations, offers) {
-    const pointPresenter = new PointPresenter(this._listEventsElement, this._handleViewAction, this._handleModeChange);
+    const pointPresenter = new PointPresenter(this._listEventsComponent, this._handleViewAction, this._handleModeChange);
     pointPresenter.init(tripEvent, destinations, offers);
     this._pointPresenter.set(tripEvent.id, pointPresenter);
   }
@@ -115,7 +127,7 @@ export default class Trip {
   }
 
   _renderTripEvents(tripEvents, destinations, offers) {
-    render(this._tripEventsElement, this._listEventsElement, RenderPosition.BEFOREEND);
+    render(this._tripEventsElement, this._listEventsComponent, RenderPosition.BEFOREEND);
     for (let i = 0; i < tripEvents.length; i++) {
       this._renderEvent(tripEvents[i], destinations, offers);
     }
@@ -131,14 +143,19 @@ export default class Trip {
     this._renderTrip();
   }
 
-  _clearTrip({resetSortType = false} = {}) {
+  _clearTrip({resetSortType = false, resetTripInfo = false} = {}) {
     this._clearTripEventsList();
 
-    remove(this._listEventsElement);
-    remove(this._eventsSort);
+    remove(this._listEventsComponent);
+    remove(this._eventsSortComponent);
 
     if (this._noTripEventsComponent) {
       remove(this._noTripEventsComponent);
+    }
+
+    if (resetTripInfo) {
+      remove(this._tripInfoComponent);
+      this._tripInfoComponent = null;
     }
 
     if (resetSortType) {
@@ -151,6 +168,7 @@ export default class Trip {
     if(points.length === NO_EVENTS) {
       this._renderNoEvents();
     } else {
+      this._renderTripInfo(points);
       this._renderSort();
       this._renderTripEvents(points, this._destinations, this._offers);
     }
