@@ -8,6 +8,7 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import {RenderPosition, render} from './utils/render.js';
 import PointsModel from './model/points.js';
 import FilterModel from './model/filter.js';
+import {MenuItem} from './utils/common.js';
 
 const MOCK_COUNT = 15;
 
@@ -17,6 +18,9 @@ const siteFilterElement = siteHeaderElement.querySelector('.trip-controls__filte
 const tripEventsElement = document.querySelector('.trip-events');
 
 const mocksPoints = new Array(MOCK_COUNT).fill(null).map(generatePointTrip);
+
+const siteMenuComponent = new SiteMenuView();
+
 const mocksDestinations = getDestinations();
 const mocksOffers = getOffers();
 const mocksCities = cities;
@@ -26,7 +30,7 @@ pointsModel.setPoints(mocksPoints);
 
 const filterModel = new FilterModel();
 
-render(siteMenuElement, new SiteMenuView(), RenderPosition.BEFOREEND);
+render(siteMenuElement, siteMenuComponent, RenderPosition.BEFOREEND);
 
 const tripPresenter = new TripPresenter(tripEventsElement, siteHeaderElement, pointsModel, filterModel);
 tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
@@ -38,3 +42,19 @@ document.querySelector('.trip-main__event-add-btn').addEventListener('click', (e
   evt.preventDefault();
   tripPresenter.createPoint();
 });
+
+const handleSiteMenuClick = (menuItem) => {
+  switch (menuItem) {
+    case MenuItem.ADD_NEW_POINT:
+
+      break;
+    case MenuItem.POINTS:
+
+      break;
+    case MenuItem.STATISTICS:
+
+      break;
+  }
+};
+
+siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
