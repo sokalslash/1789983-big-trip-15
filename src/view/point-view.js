@@ -9,11 +9,6 @@ const EMPTY_EVENT = {
   availableCities: [
     'Salzburg',
     'Washington',
-    'Cairo',
-    'Galway',
-    'Bonn',
-    'La-Paz',
-    'Kochi',
     'Vancouver',
     'Dubai',
     'Denver',
@@ -22,6 +17,10 @@ const EMPTY_EVENT = {
     description: '',
     name: '',
     pictures: [],
+  },
+  offers: {
+    offers: [],
+    type: '',
   },
   dateFrom: new Date(),
   dateTo: new Date(),
@@ -87,9 +86,9 @@ const createEventSectionDestination = (destination) => {
   return '';
 };
 
-const createPointEditTemplate = (conditionData) => {
-  const {availableCities, destination, dateFrom, dateTo, basePrice, offers} = conditionData;
-  const listOptionCities = availableCities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
+const createPointEditTemplate = (conditionData, cities) => {
+  const {destination, dateFrom, dateTo, basePrice, offers} = conditionData;
+  const listOptionCities = cities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
   const offersConteiner = createEventSectionOffers(offers.offers);
@@ -101,7 +100,7 @@ const createPointEditTemplate = (conditionData) => {
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
-        <img class="event__type-icon" width="17" height="17" src="${pointTypeIcon[offers.type]}" alt="Event type icon">
+        <img class="event__type-icon" width="17" height="17" src="${offers.type ? pointTypeIcon[offers.type] : 'img/icons/bus.png'}" alt="Event type icon">
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -161,7 +160,7 @@ const createPointEditTemplate = (conditionData) => {
       <label class="event__label  event__type-output" for="event-destination-1">
       ${offers.type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" required>
       <datalist id="destination-list-1">
       ${listOptionCities}
       </datalist>
@@ -180,7 +179,7 @@ const createPointEditTemplate = (conditionData) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}" required>
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -198,10 +197,11 @@ const createPointEditTemplate = (conditionData) => {
 };
 
 export default class PointEdit extends SmartView {
-  constructor(tripEvent = EMPTY_EVENT, destinations, offers) {
+  constructor(destinations, offers, cities, tripEvent = EMPTY_EVENT) {
     super();
     this._destinations = destinations;
     this._offers = offers;
+    this._cities = cities;
     this._conditionData = PointEdit.parseInformationToCondition(tripEvent);
     this._datapickerForStart = null;
     this._datapickerForEnd = null;
@@ -238,7 +238,7 @@ export default class PointEdit extends SmartView {
   }
 
   getTemplate() {
-    return createPointEditTemplate(this._conditionData);
+    return createPointEditTemplate(this._conditionData, this._cities);
   }
 
   _getDestinationForUpdate(markerForSearch, destinations) {
@@ -259,9 +259,11 @@ export default class PointEdit extends SmartView {
   }
 
   _destinationChangekHandler(evt) {
-    this.updateData({
-      destination: this._destinations.find((destination) => evt.target.value === destination.name),
-    });
+    if (this._cities.includes(evt.target.value)) {
+      this.updateData({
+        destination: this._destinations.find((destination) => evt.target.value === destination.name),
+      });
+    }
   }
 
   _checkboxOfferClickHandler(evt) {
