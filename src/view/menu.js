@@ -2,8 +2,8 @@ import AbstractView from './abstract.js';
 import {MenuItem} from '../utils/common.js';
 
 const createSiteMenuTemplate = () => (`<nav class="trip-controls__trip-tabs  trip-tabs">
-<a class="trip-tabs__btn  trip-tabs__btn--active ${MenuItem.POINTS}" href="#">Table</a>
-<a class="trip-tabs__btn ${MenuItem.STATISTICS}" href="#">Stats</a>
+<a class="trip-tabs__btn  trip-tabs__btn--active" href="#">Table</a>
+<a class="trip-tabs__btn" href="#">Stats</a>
 </nav>`);
 
 export default class SiteMenu extends AbstractView {
@@ -11,6 +11,8 @@ export default class SiteMenu extends AbstractView {
     super();
 
     this._menuClickHandler = this._menuClickHandler.bind(this);
+
+    this._tabsItems = this.getElement().querySelectorAll('.trip-tabs__btn');
   }
 
   getTemplate() {
@@ -19,7 +21,7 @@ export default class SiteMenu extends AbstractView {
 
   _menuClickHandler(evt) {
     evt.preventDefault();
-    this._callback.menuClick(evt.target.value);
+    this._callback.menuClick(evt.target.textContent);
   }
 
   setMenuClickHandler(callback) {
@@ -28,10 +30,30 @@ export default class SiteMenu extends AbstractView {
   }
 
   setMenuItem(menuItem) {
-    const item = this.getElement().querySelector(`.${menuItem}`);
-
-    if (item !== null) {
-      item.desabled = false;
+    switch (menuItem) {
+      case MenuItem.POINTS:
+        this._tabsItems[1].classList.remove('trip-tabs__btn--active');
+        this._tabsItems[0].classList.add('trip-tabs__btn--active');
+        break;
+      case MenuItem.STATISTICS:
+        this._tabsItems[1].classList.remove('trip-tabs__btn--active');
+        this._tabsItems[0].classList.add('trip-tabs__btn--active');
+        break;
+      // case MenuItem.ADD_NEW_POINT:
+      //   this._tabsItems[1].classList.remove('trip-tabs__btn--active');
+      //   this._tabsItems[0].classList.add('trip-tabs__btn--active');
+      //   break;
     }
+    // if (menuItem === MenuItem.POINTS) {
+    // this._tabsItems[1].classList.remove('trip-tabs__btn--active');
+    // this._tabsItems[0].classList.add('trip-tabs__btn--active');
+    // } else if (menuItem === MenuItem.STATISTICS) {
+    //   this._tabsItems[0].classList.remove('trip-tabs__btn--active');
+    //   this._tabsItems[1].classList.add('trip-tabs__btn--active');
+    // }
+  }
+
+  removeMenuItem() {
+    this._tabsItems.forEach((tabItem) => tabItem.classList.remove('trip-tabs__btn--active'));
   }
 }

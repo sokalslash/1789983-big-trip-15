@@ -330,7 +330,7 @@ export default class PointEdit extends SmartView {
       this.getElement().querySelector('#event-start-time-1'),
       {
         enableTime: true,
-        dateFormat: 'j/m/Y H:i',
+        dateFormat: 'j/m/y H:i',
         defaultDate: humanizeDateForPoint(this._conditionData.dateFrom),
         onChange: this._startTimeChangeHandler,
       },
@@ -348,7 +348,7 @@ export default class PointEdit extends SmartView {
       {
         enableTime: true,
         minDate: humanizeDateForAttributeEvent(this._conditionData.dateFrom),
-        dateFormat: 'j/m/Y H:i',
+        dateFormat: 'j/m/y H:i',
         defaultDate: humanizeDateForPoint(this._conditionData.dateTo),
         onChange: this._endTimeChangeHandler,
       },

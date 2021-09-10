@@ -1,7 +1,7 @@
 export const MenuItem = {
-  ADD_NEW_POINT: 'add-new-point',
-  POINTS: 'points',
-  STATISTICS: 'statistics',
+  ADD_NEW_POINT: 'trip-main__event-add-btn',
+  POINTS: 'Table',
+  STATISTICS: 'Stats',
 };
 
 export const getRandomInteger = (a = 0, b = 1) => {
