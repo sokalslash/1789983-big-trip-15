@@ -51,23 +51,19 @@ export const generateDifferenceDate = (dateTo, dateFrom) => {
   }
 };
 
-export const isPast = (date) => dayjs().isAfter(dayjs(date), 'D');
-
-export const isFutures = (date) => dayjs().isBefore(dayjs(date), 'D');
-
 export const sortDay = (pointA, pointB) => {
-  if (pointA.dateFrom > pointB.dateFrom) {
+  if (dayjs(pointA.dateFrom).isAfter(dayjs(pointB.dateFrom))) {
     return 1;
   }
-  if (pointA.dateFrom < pointB.dateFrom) {
+  if (dayjs(pointA.dateFrom).isBefore(dayjs(pointB.dateFrom))) {
     return -1;
   }
   return 0;
 };
 
 export const sortTime = (pointA, pointB) => {
-  const durationPointA = pointA.dateTo.diff(pointA.dateFrom);
-  const durationPointB = pointB.dateTo.diff(pointB.dateFrom);
+  const durationPointA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const durationPointB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
   return durationPointB - durationPointA;
 };
 

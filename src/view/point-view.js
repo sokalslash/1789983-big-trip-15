@@ -9,11 +9,6 @@ const EMPTY_EVENT = {
   availableCities: [
     'Salzburg',
     'Washington',
-    'Cairo',
-    'Galway',
-    'Bonn',
-    'La-Paz',
-    'Kochi',
     'Vancouver',
     'Dubai',
     'Denver',
@@ -22,6 +17,10 @@ const EMPTY_EVENT = {
     description: '',
     name: '',
     pictures: [],
+  },
+  offers: {
+    offers: [],
+    type: '',
   },
   dateFrom: new Date(),
   dateTo: new Date(),
@@ -87,9 +86,9 @@ const createEventSectionDestination = (destination) => {
   return '';
 };
 
-const createPointEditTemplate = (conditionData) => {
-  const {availableCities, destination, dateFrom, dateTo, basePrice, offers} = conditionData;
-  const listOptionCities = availableCities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
+const createPointEditTemplate = (conditionData, cities) => {
+  const {destination, dateFrom, dateTo, basePrice, offers} = conditionData;
+  const listOptionCities = cities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
   const offersConteiner = createEventSectionOffers(offers.offers);
@@ -101,7 +100,7 @@ const createPointEditTemplate = (conditionData) => {
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
-        <img class="event__type-icon" width="17" height="17" src="${pointTypeIcon[offers.type]}" alt="Event type icon">
+        <img class="event__type-icon" width="17" height="17" src="${offers.type ? pointTypeIcon[offers.type] : 'img/icons/bus.png'}" alt="Event type icon">
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -161,7 +160,7 @@ const createPointEditTemplate = (conditionData) => {
       <label class="event__label  event__type-output" for="event-destination-1">
       ${offers.type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" required>
       <datalist id="destination-list-1">
       ${listOptionCities}
       </datalist>
@@ -180,11 +179,11 @@ const createPointEditTemplate = (conditionData) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}" required>
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Cancel</button>
+    <button class="event__reset-btn" type="reset">Delete</button>
     <button class="event__rollup-btn" type="button">
     <span class="visually-hidden">Open event</span>
   </button>
@@ -198,18 +197,23 @@ const createPointEditTemplate = (conditionData) => {
 };
 
 export default class PointEdit extends SmartView {
-  constructor(tripEvent = EMPTY_EVENT, destinations, offers) {
+  constructor(destinations, offers, cities, tripEvent = EMPTY_EVENT) {
     super();
     this._destinations = destinations;
     this._offers = offers;
+    this._cities = cities;
     this._conditionData = PointEdit.parseInformationToCondition(tripEvent);
+    this._datapickerForStart = null;
+    this._datapickerForEnd = null;
+
 
     this._rollupButtonClickHandler = this._rollupButtonClickHandler.bind(this);
-    this._cancelClickHandler = this._cancelClickHandler.bind(this);
+    this._deleteClickHandler = this._deleteClickHandler.bind(this);
     this._formSubmitHandler = this._formSubmitHandler.bind(this);
     this._typeGroupClickHandler = this._typeGroupClickHandler.bind(this);
     this._checkboxOfferClickHandler = this._checkboxOfferClickHandler.bind(this);
     this._destinationChangekHandler = this._destinationChangekHandler.bind(this);
+    this._priceChangekHandler = this._priceChangekHandler.bind(this);
     this._getDestinationForUpdate = this._getDestinationForUpdate.bind(this);
     this._endTimeChangeHandler = this._endTimeChangeHandler.bind(this);
     this._startTimeChangeHandler = this._startTimeChangeHandler.bind(this);
@@ -219,8 +223,22 @@ export default class PointEdit extends SmartView {
     this._setDatepickerForEnd();
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this._datapickerForStart) {
+      this._datapickerForStart.destroy();
+      this._datapickerForStart = null;
+    }
+
+    if (this._datapickerForEnd) {
+      this._datapickerForEnd.destroy();
+      this._datapickerForEnd = null;
+    }
+  }
+
   getTemplate() {
-    return createPointEditTemplate(this._conditionData);
+    return createPointEditTemplate(this._conditionData, this._cities);
   }
 
   _getDestinationForUpdate(markerForSearch, destinations) {
@@ -231,12 +249,21 @@ export default class PointEdit extends SmartView {
     this.getElement().querySelector('.event__type-group').addEventListener('click', this._typeGroupClickHandler);
     this.getElement().querySelector('.event__details').addEventListener('click', this._checkboxOfferClickHandler);
     this.getElement().querySelector('#event-destination-1').addEventListener('change', this._destinationChangekHandler);
+    this.getElement().querySelector('#event-price-1').addEventListener('change', this._priceChangekHandler);
+  }
+
+  _priceChangekHandler(evt) {
+    this.updateData({
+      basePrice: +evt.target.value,
+    });
   }
 
   _destinationChangekHandler(evt) {
-    this.updateData({
-      destination: this._destinations.find((destination) => evt.target.value === destination.name),
-    });
+    if (this._cities.includes(evt.target.value)) {
+      this.updateData({
+        destination: this._destinations.find((destination) => evt.target.value === destination.name),
+      });
+    }
   }
 
   _checkboxOfferClickHandler(evt) {
@@ -280,8 +307,8 @@ export default class PointEdit extends SmartView {
     }
   }
 
-  _cancelClickHandler() {
-    this._callback.cancelClick();
+  _deleteClickHandler() {
+    this._callback.deleteClick(PointEdit.parseConditionToInformation(this._conditionData));
   }
 
   _rollupButtonClickHandler() {
@@ -350,12 +377,12 @@ export default class PointEdit extends SmartView {
     this._setDatepickerForEnd();
     this.setRollupButtonClickHandler(this._callback.editClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setCancelClickHandler(this._callback.cancelClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
-  setCancelClickHandler(callback) {
-    this._callback.cancelClick = callback;
-    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._cancelClickHandler);
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector('.event__reset-btn').addEventListener('click', this._deleteClickHandler);
   }
 
   setRollupButtonClickHandler(callback) {
