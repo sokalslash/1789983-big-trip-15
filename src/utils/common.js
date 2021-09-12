@@ -1,3 +1,9 @@
+export const Time = {
+  ONE_MINUTE: 60000,
+  ONE_HOUR: 3600000,
+  ONE_DAY: 86400000,
+};
+
 export const MenuItem = {
   ADD_NEW_POINT: 'trip-main__event-add-btn',
   POINTS: 'Table',

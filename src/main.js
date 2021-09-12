@@ -20,7 +20,6 @@ const siteFilterElement = siteHeaderElement.querySelector('.trip-controls__filte
 const tripEventsElement = document.querySelector('.trip-events');
 const eventAddButtonElement = document.querySelector('.trip-main__event-add-btn');
 const pageBodyElement = document.querySelector('.page-body__page-main div[class="page-body__container"]');
-console.log(pageBodyElement);
 
 const mocksPoints = new Array(MOCK_COUNT).fill(null).map(generatePointTrip);
 
@@ -47,7 +46,7 @@ const handlePointNewFormClose = () => {
   siteMenuComponent.setMenuItem(MenuItem.POINTS);
 };
 
-const statisticsComponent = new StatisticsView(pointsModel.getPoints());
+let statisticsComponent = null;
 
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
@@ -69,6 +68,7 @@ const handleSiteMenuClick = (menuItem) => {
     case MenuItem.STATISTICS:
       siteMenuComponent.setMenuItem(MenuItem.STATISTICS);
       tripPresenter.destroy();
+      statisticsComponent = new StatisticsView(pointsModel.getPoints());
       render(pageBodyElement, statisticsComponent, RenderPosition.BEFOREEND);
       break;
   }

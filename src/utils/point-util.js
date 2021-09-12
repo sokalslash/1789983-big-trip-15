@@ -1,8 +1,5 @@
 import dayjs from 'dayjs';
-
-const ONE_MINUTE = 60000;
-const ONE_HOUR = 3600000;
-const ONE_DAY = 86400000;
+import {Time} from './common';
 
 export const SortType = {
   TIME: 'sort-time',
@@ -34,19 +31,19 @@ export const generateDifferenceDate = (dateTo, dateFrom) => {
   const endDate = dayjs(dateTo);
   const startDate = dayjs(dateFrom);
   const differenceMilliseconds = endDate.diff(startDate);
-  if (differenceMilliseconds < ONE_HOUR) {
+  if (differenceMilliseconds < Time.ONE_HOUR) {
     const differenceMinutes = endDate.diff(startDate, 'minute');
     return `${differenceMinutes}M`;
   }
-  if (differenceMilliseconds < ONE_DAY) {
-    const hour = Math.floor(differenceMilliseconds / ONE_HOUR);
-    const minute = Math.floor((differenceMilliseconds - hour*60*60*1000) / ONE_MINUTE);
+  if (differenceMilliseconds < Time.ONE_DAY) {
+    const hour = Math.floor(differenceMilliseconds / Time.ONE_HOUR);
+    const minute = Math.floor((differenceMilliseconds - hour * Time.ONE_HOUR) / Time.ONE_MINUTE);
     return `${hour}H ${minute}M`;
   }
-  if (differenceMilliseconds > ONE_DAY) {
-    const day = Math.floor(differenceMilliseconds / ONE_DAY);
-    const hour = Math.floor((differenceMilliseconds - day*24*60*60*1000) / ONE_HOUR);
-    const minute = Math.floor((differenceMilliseconds - day*24*60*60*1000 - hour*60*60*1000) / ONE_MINUTE);
+  if (differenceMilliseconds > Time.ONE_DAY) {
+    const day = Math.floor(differenceMilliseconds / Time.ONE_DAY);
+    const hour = Math.floor((differenceMilliseconds - day * Time.ONE_DAY) / Time.ONE_HOUR);
+    const minute = Math.floor((differenceMilliseconds - day * Time.ONE_DAY - hour * Time.ONE_HOUR) / Time.ONE_MINUTE);
     return `${day}D ${hour}H ${minute}M`;
   }
 };

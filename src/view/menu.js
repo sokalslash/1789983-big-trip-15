@@ -36,21 +36,10 @@ export default class SiteMenu extends AbstractView {
         this._tabsItems[0].classList.add('trip-tabs__btn--active');
         break;
       case MenuItem.STATISTICS:
-        this._tabsItems[1].classList.remove('trip-tabs__btn--active');
-        this._tabsItems[0].classList.add('trip-tabs__btn--active');
+        this._tabsItems[0].classList.remove('trip-tabs__btn--active');
+        this._tabsItems[1].classList.add('trip-tabs__btn--active');
         break;
-      // case MenuItem.ADD_NEW_POINT:
-      //   this._tabsItems[1].classList.remove('trip-tabs__btn--active');
-      //   this._tabsItems[0].classList.add('trip-tabs__btn--active');
-      //   break;
     }
-    // if (menuItem === MenuItem.POINTS) {
-    // this._tabsItems[1].classList.remove('trip-tabs__btn--active');
-    // this._tabsItems[0].classList.add('trip-tabs__btn--active');
-    // } else if (menuItem === MenuItem.STATISTICS) {
-    //   this._tabsItems[0].classList.remove('trip-tabs__btn--active');
-    //   this._tabsItems[1].classList.add('trip-tabs__btn--active');
-    // }
   }
 
   removeMenuItem() {
