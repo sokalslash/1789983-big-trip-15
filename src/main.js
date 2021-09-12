@@ -51,7 +51,9 @@ let statisticsComponent = null;
 const handleSiteMenuClick = (menuItem) => {
   switch (menuItem) {
     case MenuItem.ADD_NEW_POINT:
-      remove(statisticsComponent);
+      if (statisticsComponent !== null) {
+        remove(statisticsComponent);
+      }
       tripPresenter.destroy();
       filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
       tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
@@ -60,7 +62,9 @@ const handleSiteMenuClick = (menuItem) => {
       eventAddButtonElement.disabled = true;
       break;
     case MenuItem.POINTS:
-      remove(statisticsComponent);
+      if (statisticsComponent !== null) {
+        remove(statisticsComponent);
+      }
       siteMenuComponent.setMenuItem(MenuItem.POINTS);
       tripPresenter.destroy();
       tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
