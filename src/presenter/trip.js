@@ -32,9 +32,6 @@ export default class Trip {
     this._handleModeChange = this._handleModeChange.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
 
-    this._pointsModel.addObserver(this._handleModelEvent);
-    this._filterModel.addObserver(this._handleModelEvent);
-
     this._pointNewPresenter = new PointNewPresenter(this._listEventsComponent, this._handleViewAction);
   }
 
@@ -43,14 +40,21 @@ export default class Trip {
     this._offers = offers;
     this._cities = cities;
 
+    this._pointsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
+
     this._renderTrip();
   }
 
-  createPoint() {
-    this._currentSortType = SortType.DAY;
-    this._filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this._pointNewPresenter.init(this._destinations, this._offers, this._cities);
-    document.querySelector('.trip-main__event-add-btn').disabled = true;
+  destroy() {
+    this._clearTrip({resetSortType: true});
+
+    this._pointsModel.removeObserver(this._handleModelEvent);
+    this._filterModel.removeObserver(this._handleModelEvent);
+  }
+
+  createPoint(callback) {
+    this._pointNewPresenter.init(this._destinations, this._offers, this._cities, callback);
   }
 
   _getPointsModel() {

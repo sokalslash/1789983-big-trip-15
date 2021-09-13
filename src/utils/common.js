@@ -1,3 +1,15 @@
+export const Time = {
+  ONE_MINUTE: 60000,
+  ONE_HOUR: 3600000,
+  ONE_DAY: 86400000,
+};
+
+export const MenuItem = {
+  ADD_NEW_POINT: 'trip-main__event-add-btn',
+  POINTS: 'Table',
+  STATISTICS: 'Stats',
+};
+
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));

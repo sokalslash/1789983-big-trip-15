@@ -102,7 +102,7 @@ const createPointEditTemplate = (conditionData, cities) => {
         <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="${offers.type ? pointTypeIcon[offers.type] : 'img/icons/bus.png'}" alt="Event type icon">
       </label>
-      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" >
 
       <div class="event__type-list">
         <fieldset class="event__type-group">
@@ -221,6 +221,8 @@ export default class PointEdit extends SmartView {
     this._setInnerHandlers();
     this._setDatepickerForStart();
     this._setDatepickerForEnd();
+
+    this._getValidationInputType();
   }
 
   removeElement() {
@@ -239,6 +241,16 @@ export default class PointEdit extends SmartView {
 
   getTemplate() {
     return createPointEditTemplate(this._conditionData, this._cities);
+  }
+
+  _getValidationInputType() {
+    const inputType = this.getElement().querySelector('#event-type-toggle-1');
+    const imegeType = this.getElement().querySelector('.event__type-icon');
+    if (imegeType.src.endsWith('img/icons/bus.png')) {
+      inputType.required = true;
+      inputType.reportValidity();
+      inputType.setCustomValidity('Заполните обязательное поле');
+    }
   }
 
   _getDestinationForUpdate(markerForSearch, destinations) {
@@ -330,7 +342,7 @@ export default class PointEdit extends SmartView {
       this.getElement().querySelector('#event-start-time-1'),
       {
         enableTime: true,
-        dateFormat: 'j/m/Y H:i',
+        dateFormat: 'j/m/y H:i',
         defaultDate: humanizeDateForPoint(this._conditionData.dateFrom),
         onChange: this._startTimeChangeHandler,
       },
@@ -348,7 +360,7 @@ export default class PointEdit extends SmartView {
       {
         enableTime: true,
         minDate: humanizeDateForAttributeEvent(this._conditionData.dateFrom),
-        dateFormat: 'j/m/Y H:i',
+        dateFormat: 'j/m/y H:i',
         defaultDate: humanizeDateForPoint(this._conditionData.dateTo),
         onChange: this._endTimeChangeHandler,
       },
