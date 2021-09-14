@@ -100,7 +100,7 @@ const createPointEditTemplate = (conditionData, cities) => {
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
-        <img class="event__type-icon" width="17" height="17" src="${offers.type ? pointTypeIcon[offers.type] : 'img/icons/bus.png'}" alt="Event type icon">
+        <img class="event__type-icon" width="17" height="17" src="${offers.type ? pointTypeIcon[offers.type] : 'img/logo.png'}" alt="Event type icon">
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" >
 
@@ -160,7 +160,7 @@ const createPointEditTemplate = (conditionData, cities) => {
       <label class="event__label  event__type-output" for="event-destination-1">
       ${offers.type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" required>
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
       <datalist id="destination-list-1">
       ${listOptionCities}
       </datalist>
@@ -179,7 +179,7 @@ const createPointEditTemplate = (conditionData, cities) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}" required>
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -246,11 +246,13 @@ export default class PointEdit extends SmartView {
   _getValidationInputType() {
     const inputType = this.getElement().querySelector('#event-type-toggle-1');
     const imegeType = this.getElement().querySelector('.event__type-icon');
-    if (imegeType.src.endsWith('img/icons/bus.png')) {
+    if (imegeType.src.endsWith('img/logo.png')) {
       inputType.required = true;
-      inputType.reportValidity();
-      inputType.setCustomValidity('Заполните обязательное поле');
     }
+
+    this.getElement().querySelector('#event-destination-1').required = true;
+
+    this.getElement().querySelector('#event-price-1').required = true;
   }
 
   _getDestinationForUpdate(markerForSearch, destinations) {
@@ -390,6 +392,10 @@ export default class PointEdit extends SmartView {
     this.setRollupButtonClickHandler(this._callback.editClick);
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setDeleteClickHandler(this._callback.deleteClick);
+  }
+
+  restoreValidation() {
+    this._getValidationInputType();
   }
 
   setDeleteClickHandler(callback) {

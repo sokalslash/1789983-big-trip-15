@@ -30,10 +30,15 @@ export default class Smart extends Abstract {
     parent.replaceChild(newElement, prevElement);
 
     this.restoreHandlers();
+    this.restoreValidation();
   }
 
   restoreHandlers() {
     throw new Error('Abstract method not implemented: resetHandlers');
+  }
+
+  restoreValidation() {
+    throw new Error ('Abstract method not implemented: restoreValidation');
   }
 }
 

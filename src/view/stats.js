@@ -1,6 +1,6 @@
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import SmartView from './smart.js';
+import AbstractView from './abstract.js';
 import {BAR_HEIGHT, typesOfPoints, getCostByPointType, getTypeCount, getPointsForType, getTimeDifference, getHumanizedTime, getSortedArrayLabelsWithData} from '../utils/stats-util.js';
 
 const renderMoneyChart = (moneyCtx, points) => {
@@ -261,7 +261,7 @@ const createStatisticsTemplate = () => `<section class="statistics">
   </div>
 </section>`;
 
-export default class Statistics extends SmartView {
+export default class Statistics extends AbstractView {
   constructor(points) {
     super();
     this._points = points;
