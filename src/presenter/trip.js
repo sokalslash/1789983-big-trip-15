@@ -2,6 +2,7 @@ import ListEventsView from '../view/list-events.js';
 import NoTripEventsView from '../view/no-events.js';
 import EventsSortView from '../view/sort.js';
 import TripInfoView from '../view/info.js';
+import LoadingView from '../view/loading.js';
 import PointPresenter from './point-presenter.js';
 import PointNewPresenter from './point-new.js';
 import {RenderPosition, render, remove} from '../utils/render.js';
@@ -12,20 +13,23 @@ import {filter, FilterType} from '../utils/filter-util.js';
 const NO_EVENTS = 0;
 
 export default class Trip {
-  constructor(tripEventsElement, siteHeaderElement, pointsModel, filterModel) {
+  constructor(tripEventsElement, siteHeaderElement, pointsModel, filterModel, api) {
     this._pointsModel = pointsModel;
     this._filterModel = filterModel;
     this._tripEventsElement = tripEventsElement;
     this._siteHeaderElement = siteHeaderElement;
+    this._api = api;
     this._pointPresenter = new Map();
     this._filterType = FilterType.EVERYTHING;
     this._currentSortType = SortType.DAY;
+    this._isLoading = true;
 
     this._eventsSortComponent = null;
     this._noTripEventsComponent = null;
+    this._tripInfoComponent = null;
 
     this._listEventsComponent = new ListEventsView();
-    this._tripInfoComponent = null;
+    this._loadingComponent = new LoadingView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -80,7 +84,9 @@ export default class Trip {
   _handleViewAction(actionType, updateType, update) {
     switch(actionType) {
       case UserAction.UPDATE_POINT:
-        this._pointsModel.updatePointsModel(updateType, update);
+        this._api.updatePoint(update).then((response) => {
+          this._pointsModel.updatePointsModel(updateType, response);
+        });
         break;
       case UserAction.ADD_POINT:
         this._pointsModel.addPoint(updateType, update);
@@ -104,12 +110,21 @@ export default class Trip {
         this._clearTrip({resetSortType: true, resetTripInfo: true});
         this._renderTrip();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderTrip();
+        break;
     }
   }
 
   _renderNoEvents() {
     this._noTripEventsComponent = new NoTripEventsView(this._filterType);
     render(this._tripEventsElement, this._noTripEventsComponent, RenderPosition.BEFOREEND);
+  }
+
+  _renderLoading() {
+    render(this._tripEventsElement, this._loadingComponent, RenderPosition.BEFOREEND);
   }
 
   _renderSort() {
@@ -165,6 +180,7 @@ export default class Trip {
 
     remove(this._listEventsComponent);
     remove(this._eventsSortComponent);
+    remove(this._loadingComponent);
 
     if (this._noTripEventsComponent) {
       remove(this._noTripEventsComponent);
@@ -181,8 +197,13 @@ export default class Trip {
   }
 
   _renderTrip() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const points = this._getPointsModel();
-    if(points.length === NO_EVENTS) {
+    if (points.length === NO_EVENTS) {
       this._renderNoEvents();
     } else {
       this._renderTripInfo(points);

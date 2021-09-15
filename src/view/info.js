@@ -24,7 +24,7 @@ const getOffersChecked = (availableOffersForPoint) => {
 const createTripInfoTemplate = (tripEvents) => {
   const result = [];
   for (let i = 0; i < tripEvents.length; i++) {
-    result.push(getOffersChecked(tripEvents[i].offers.offers));
+    result.push(getOffersChecked(tripEvents[i].offers));
   }
   const clearResult = result.filter((element) => element.length !== 0);
   const allOffersChecked = clearResult.flat();

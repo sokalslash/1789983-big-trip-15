@@ -55,10 +55,9 @@ const createEventSectionOffers = (offers) => {
 
 const createImageDestination = (pathForImg) => (`<img class="event__photo" src="${pathForImg.src}" alt="${pathForImg.description}">`);
 
-const createDstinationDescription = (descriptions) => {
-  if (descriptions && descriptions.length !== 0) {
-    const destinationDescription = descriptions.join(' ');
-    return `<p class="event__destination-description">${destinationDescription}</p>`;
+const createDestinationDescription = (descriptions) => {
+  if (descriptions) {
+    return `<p class="event__destination-description">${descriptions}</p>`;
   }
   return '';
 };
@@ -79,7 +78,7 @@ const createEventSectionDestination = (destination) => {
   if (destination.description && destination.description.length !== 0 || destination.pictures && destination.pictures.length !== 0) {
     return `<section class="event__section  event__section--destination">
     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    ${createDstinationDescription(destination.description)}
+    ${createDestinationDescription(destination.description)}
     ${createDstinationPictures(destination.pictures)}
   </section>`;
   }
@@ -87,11 +86,11 @@ const createEventSectionDestination = (destination) => {
 };
 
 const createPointEditTemplate = (conditionData, cities) => {
-  const {destination, dateFrom, dateTo, basePrice, offers} = conditionData;
+  const {destination, dateFrom, dateTo, basePrice, offers, type} = conditionData;
   const listOptionCities = cities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
-  const offersConteiner = createEventSectionOffers(offers.offers);
+  const offersConteiner = createEventSectionOffers(offers);
   const destinationConteiner = createEventSectionDestination(destination);
 
   return `<li class="trip-events__item">
@@ -100,7 +99,7 @@ const createPointEditTemplate = (conditionData, cities) => {
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
-        <img class="event__type-icon" width="17" height="17" src="${offers.type ? pointTypeIcon[offers.type] : 'img/logo.png'}" alt="Event type icon">
+        <img class="event__type-icon" width="17" height="17" src="${type ? pointTypeIcon[type] : 'img/logo.png'}" alt="Event type icon">
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" >
 
@@ -158,7 +157,7 @@ const createPointEditTemplate = (conditionData, cities) => {
 
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination-1">
-      ${offers.type}
+      ${type}
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
       <datalist id="destination-list-1">
@@ -282,12 +281,12 @@ export default class PointEdit extends SmartView {
 
   _checkboxOfferClickHandler(evt) {
     if (evt.target.nodeName === 'INPUT') {
-      const IndexOfferChecked = this._conditionData.offers.offers.findIndex((offer) =>  offer.title.includes(evt.target.labels[0].childNodes[1].innerText));
-      const oldOffers = this._conditionData.offers.offers;
+      const IndexOfferChecked = this._conditionData.offers.findIndex((offer) =>  offer.title.includes(evt.target.labels[0].childNodes[1].innerText));
+      const oldOffers = this._conditionData.offers;
 
       const offerChecked = Object.assign(
         {},
-        this._conditionData.offers.offers[IndexOfferChecked],
+        this._conditionData.offers[IndexOfferChecked],
         {
           isChecked: evt.target.checked,
         },
@@ -299,24 +298,17 @@ export default class PointEdit extends SmartView {
         ...oldOffers.slice(IndexOfferChecked + 1),
       ];
 
-      const newOffersForPointType = Object.assign(
-        {},
-        this._conditionData.offers,
-        {
-          offers: newOffers,
-        },
-      );
-
       this.updateData({
-        offers: newOffersForPointType,
+        offers: newOffers,
       });
     }
   }
 
   _typeGroupClickHandler(evt) {
     if (evt.target.value) {
+      const newOffers = this._offers.find((offer) => offer.type === evt.target.value);
       this.updateData({
-        offers: this._offers.find((offer) => offer.type === evt.target.value),
+        offers: newOffers.offers,
       });
     }
   }

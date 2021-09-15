@@ -29,14 +29,14 @@ const isFavorite = (flag) => {
 
 const createTripEventTemplate = (tripEvents) => {
   if (tripEvents && tripEvents.length !== 0) {
-    const {dateFrom, dateTo, basePrice, offers, favorite, destination} = tripEvents;
+    const {dateFrom, dateTo, basePrice, offers, type, favorite, destination} = tripEvents;
     const dateForStart = humanizeDateForEventAndInfo(dateFrom);
     const dateForAttributeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForAttributeTimeStart = humanizeDateForAttributeEvent(dateFrom);
     const dateForTimeStart = humanizeTimeForEvent(dateFrom);
     const dateForAttributeTimeAnd = humanizeDateForAttributeEvent(dateTo);
     const dateForTimeAnd = humanizeTimeForEvent(dateTo);
-    const offersContainer = createOffersContainer(offers.offers);
+    const offersContainer = createOffersContainer(offers);
     const favoriteActive = isFavorite(favorite);
     const dateDifference = generateDifferenceDate(dateTo, dateFrom);
 
@@ -44,9 +44,9 @@ const createTripEventTemplate = (tripEvents) => {
   <div class="event">
     <time class="event__date" datetime="${dateForAttributeStart}">${dateForStart}</time>
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src=${pointTypeIcon[offers.type]} alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src=${pointTypeIcon[type]} alt="Event type icon">
     </div>
-    <h3 class="event__title">${offers.type} ${destination.name}</h3>
+    <h3 class="event__title">${type} ${destination.name}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="${dateForAttributeTimeStart}">${dateForTimeStart}</time>

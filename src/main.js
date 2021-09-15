@@ -1,6 +1,5 @@
 import SiteMenuView from './view/menu.js';
 import StatisticsView from './view/stats.js';
-import {generatePointTrip} from './mock/point-trip';
 import {getDestinations} from './mock/destination';
 import {getOffers} from './mock/offers.js';
 import {cities} from './mock/available-cities';
@@ -11,8 +10,10 @@ import FilterModel from './model/filter.js';
 import {MenuItem, UpdateType} from './utils/common.js';
 import {FilterType} from './utils/filter-util.js';
 import {RenderPosition, render, remove} from './utils/render.js';
+import Api from './api.js';
 
-const MOCK_COUNT = 15;
+const AUTHORIZATION = 'Basic M23nh1p8HG95lK';
+const ADDRESS = 'https://15.ecmascript.pages.academy/big-trip';
 
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteMenuElement = siteHeaderElement.querySelector('.trip-controls__navigation');
@@ -21,26 +22,37 @@ const tripEventsElement = document.querySelector('.trip-events');
 const eventAddButtonElement = document.querySelector('.trip-main__event-add-btn');
 const pageBodyElement = document.querySelector('.page-body__page-main div[class="page-body__container"]');
 
-const mocksPoints = new Array(MOCK_COUNT).fill(null).map(generatePointTrip);
+eventAddButtonElement.disabled = true;
+
+const api = new Api(ADDRESS, AUTHORIZATION);
 
 const siteMenuComponent = new SiteMenuView();
+
+render(siteMenuElement, siteMenuComponent, RenderPosition.BEFOREEND);
 
 const mocksDestinations = getDestinations();
 const mocksOffers = getOffers();
 const mocksCities = cities;
 
 const pointsModel = new PointsModel();
-pointsModel.setPoints(mocksPoints);
 
 const filterModel = new FilterModel();
 
-render(siteMenuElement, siteMenuComponent, RenderPosition.BEFOREEND);
-
-const tripPresenter = new TripPresenter(tripEventsElement, siteHeaderElement, pointsModel, filterModel);
+const tripPresenter = new TripPresenter(tripEventsElement, siteHeaderElement, pointsModel, filterModel, api);
 tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
 
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, pointsModel);
 filterPresenter.init();
+
+api.getPoints()
+  .then((points) => {
+    pointsModel.setPoints(UpdateType.INIT, points);
+    eventAddButtonElement.disabled = false;
+  })
+  .catch(() => {
+    pointsModel.setPoints(UpdateType.INIT, []);
+    eventAddButtonElement.disabled = false;
+  });
 
 const handlePointNewFormClose = () => {
   siteMenuComponent.setMenuItem(MenuItem.POINTS);

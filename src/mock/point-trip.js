@@ -6,6 +6,18 @@ import {getDestinations} from './destination';
 
 const MAX_DATE_GAP = 151200;
 
+const typePoint = [
+  'taxi',
+  'bus',
+  'train',
+  'ship',
+  'drive',
+  'flight',
+  'check-in',
+  'sightseeing',
+  'restaurant',
+];
+
 const generateDateFrom = () => {
   const secondGapForFrom = getRandomInteger(-MAX_DATE_GAP, MAX_DATE_GAP);
   return dayjs().add(secondGapForFrom, 'second');
@@ -29,6 +41,7 @@ const generatePointTrip = () => {
     dateTo:newDateTo.toISOString(),
     favorite: Boolean(getRandomInteger(0, 1)),
     basePrice: getRandomInteger(0, 1000),
+    type: typePoint[getRandomInteger(0, typePoint.length-1)],
   };
 };
 
