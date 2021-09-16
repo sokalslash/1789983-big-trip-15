@@ -1,15 +1,11 @@
 import {humanizeDateForEventAndInfo, humanizeTimeForEvent, humanizeDateForAttributeEvent, pointTypeIcon, generateDifferenceDate} from '../utils/point-util.js';
 import AbstractView from './abstract.js';
 
-const createOfferListItemTemplete = (offer) => {
-  if (offer.isChecked) {
-    return `<li class="event__offer">
+const createOfferListItemTemplete = (offer) => `<li class="event__offer">
     <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
     </li>`;
-  }
-};
 
 const createOffersContainer = (offers) => {
   if (offers && offers.length !== 0) {

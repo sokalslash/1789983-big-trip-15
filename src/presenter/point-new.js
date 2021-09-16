@@ -1,5 +1,4 @@
 import PointEditView from '../view/point-view.js';
-import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../utils/common.js';
 
@@ -51,7 +50,7 @@ export default class PointNew {
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MAJOR,
-      Object.assign({id: nanoid()}, tripEvent),
+      tripEvent,
     );
     this.destroy();
   }

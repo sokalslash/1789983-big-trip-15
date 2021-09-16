@@ -7,16 +7,16 @@ export const typesOfPoints = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight',
 
 export const getCostByPointType = (type, points) =>
   points
-    .filter((point) => point.offers.type === type)
+    .filter((point) => point.type === type)
     .reduce((amount, point) => amount + point.basePrice, 0);
 
 export const getTypeCount = (type, points) =>
   points
-    .filter((point) => point.offers.type === type).length;
+    .filter((point) => point.type === type).length;
 
 export const getPointsForType = (type, points) =>
   points
-    .filter((point) => point.offers.type === type);
+    .filter((point) => point.type === type);
 
 export const getTimeDifference = (dateTo, dateFrom) => {
   const endDate = dayjs(dateTo);

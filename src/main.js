@@ -1,16 +1,16 @@
 import SiteMenuView from './view/menu.js';
 import StatisticsView from './view/stats.js';
-import {getDestinations} from './mock/destination';
-import {getOffers} from './mock/offers.js';
-import {cities} from './mock/available-cities';
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import PointsModel from './model/points.js';
 import FilterModel from './model/filter.js';
+import DestinationsModel from './model/destinations.js';
+import OffersModel from './model/offers.js';
 import {MenuItem, UpdateType} from './utils/common.js';
 import {FilterType} from './utils/filter-util.js';
 import {RenderPosition, render, remove} from './utils/render.js';
 import Api from './api.js';
+
 
 const AUTHORIZATION = 'Basic M23nh1p8HG95lK';
 const ADDRESS = 'https://15.ecmascript.pages.academy/big-trip';
@@ -30,16 +30,20 @@ const siteMenuComponent = new SiteMenuView();
 
 render(siteMenuElement, siteMenuComponent, RenderPosition.BEFOREEND);
 
-const mocksDestinations = getDestinations();
-const mocksOffers = getOffers();
-const mocksCities = cities;
+const destinationsModel = new DestinationsModel();
+api.getDestinations()
+  .then((detinations) => destinationsModel.setDestinations(detinations));
+
+const offersModel = new OffersModel();
+api.getOffers()
+  .then((offers) => offersModel.setOffers(offers));
 
 const pointsModel = new PointsModel();
 
 const filterModel = new FilterModel();
 
 const tripPresenter = new TripPresenter(tripEventsElement, siteHeaderElement, pointsModel, filterModel, api);
-tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
+tripPresenter.init(destinationsModel, offersModel);
 
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, pointsModel);
 filterPresenter.init();
@@ -68,7 +72,7 @@ const handleSiteMenuClick = (menuItem) => {
       }
       tripPresenter.destroy();
       filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
-      tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
+      tripPresenter.init(destinationsModel, offersModel);
       tripPresenter.createPoint(handlePointNewFormClose);
       siteMenuComponent.removeMenuItem();
       eventAddButtonElement.disabled = true;
@@ -79,7 +83,7 @@ const handleSiteMenuClick = (menuItem) => {
       }
       siteMenuComponent.setMenuItem(MenuItem.POINTS);
       tripPresenter.destroy();
-      tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
+      tripPresenter.init(destinationsModel, offersModel);
       break;
     case MenuItem.STATISTICS:
       siteMenuComponent.setMenuItem(MenuItem.STATISTICS);

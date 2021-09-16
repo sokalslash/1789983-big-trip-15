@@ -39,10 +39,9 @@ export default class Trip {
     this._pointNewPresenter = new PointNewPresenter(this._listEventsComponent, this._handleViewAction);
   }
 
-  init(destinations, offers, cities) {
+  init(destinations, offers) {
     this._destinations = destinations;
     this._offers = offers;
-    this._cities = cities;
 
     this._pointsModel.addObserver(this._handleModelEvent);
     this._filterModel.addObserver(this._handleModelEvent);
@@ -58,7 +57,7 @@ export default class Trip {
   }
 
   createPoint(callback) {
-    this._pointNewPresenter.init(this._destinations, this._offers, this._cities, callback);
+    this._pointNewPresenter.init(this._destinations.getDestinations(), this._offers.getOffers(), this._destinations.getCities(), callback);
   }
 
   _getPointsModel() {
@@ -89,10 +88,14 @@ export default class Trip {
         });
         break;
       case UserAction.ADD_POINT:
-        this._pointsModel.addPoint(updateType, update);
+        this._api.addPoint(update).then((respons) => {
+          this._pointsModel.addPoint(updateType, respons);
+        });
         break;
       case UserAction.DELETE_POINT:
-        this._pointsModel.deletePoint(updateType, update);
+        this._api.deletePoint(update).then(() => {
+          this._pointsModel.deletePoint(updateType, update);
+        });
         break;
     }
   }
@@ -100,7 +103,7 @@ export default class Trip {
   _handleModelEvent(updateType, data) {
     switch (updateType) {
       case UpdateType.PATCH:
-        this._pointPresenter.get(data.id).init(data, this._destinations, this._offers, this._cities);
+        this._pointPresenter.get(data.id).init(data, this._destinations.getDestinations(), this._offers.getOffers(), this._destinations.getCities());
         break;
       case UpdateType.MINOR:
         this._clearTrip({resetSortType: true});
@@ -208,7 +211,7 @@ export default class Trip {
     } else {
       this._renderTripInfo(points);
       this._renderSort();
-      this._renderTripEvents(points, this._destinations, this._offers, this._cities);
+      this._renderTripEvents(points, this._destinations.getDestinations(), this._offers.getOffers(), this._destinations.getCities());
     }
   }
 }

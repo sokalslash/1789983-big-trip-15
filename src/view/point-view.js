@@ -5,7 +5,7 @@ import flatpickr from 'flatpickr';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const EMPTY_EVENT = {
-  type: 'flight',
+  type: '',
   availableCities: [
     'Salzburg',
     'Washington',
@@ -18,10 +18,7 @@ const EMPTY_EVENT = {
     name: '',
     pictures: [],
   },
-  offers: {
-    offers: [],
-    type: '',
-  },
+  offers: [],
   dateFrom: new Date(),
   dateTo: new Date(),
   basePrice: '',
@@ -30,11 +27,11 @@ const EMPTY_EVENT = {
 const createOptionForCity = (city) => (`<option value="${city}">${city}</option>`);
 
 const createOfferCheckbox = (offer) => {
-  const wordForAttribute = offer.title.split(' ').pop();
+  const wordsForAttribute = offer.title.split(' ').join('-');
   return `<div class="event__available-offers">
   <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${wordForAttribute}-1" type="checkbox" name="event-offer-${wordForAttribute}"${offer.isChecked ? 'checked' : ''}>
-    <label class="event__offer-label" for="event-offer-${wordForAttribute}-1">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${wordsForAttribute}-1" type="checkbox" name="event-offer-${wordsForAttribute}" ${offer.isChecked ? 'checked' : ''}>
+    <label class="event__offer-label" for="event-offer-${wordsForAttribute}-1">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${offer.price}</span>
@@ -90,6 +87,14 @@ const createPointEditTemplate = (conditionData, cities) => {
   const listOptionCities = cities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
+  // const checkedOffers = offers.map((offer) => {
+  //   Object.assign(
+  //     {},
+  //     offer,
+  //     {isChecked: true},
+  //   );
+  // });
+  //console.log(conditionData);
   const offersConteiner = createEventSectionOffers(offers);
   const destinationConteiner = createEventSectionDestination(destination);
 
@@ -133,7 +138,7 @@ const createPointEditTemplate = (conditionData, cities) => {
           </div>
 
           <div class="event__type-item">
-            <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
+            <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight">
             <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
           </div>
 
@@ -281,7 +286,7 @@ export default class PointEdit extends SmartView {
 
   _checkboxOfferClickHandler(evt) {
     if (evt.target.nodeName === 'INPUT') {
-      const IndexOfferChecked = this._conditionData.offers.findIndex((offer) =>  offer.title.includes(evt.target.labels[0].childNodes[1].innerText));
+      const IndexOfferChecked = this._conditionData.offers.findIndex((offer) => offer.title.includes(evt.target.labels[0].childNodes[1].innerText));
       const oldOffers = this._conditionData.offers;
 
       const offerChecked = Object.assign(
@@ -308,6 +313,7 @@ export default class PointEdit extends SmartView {
     if (evt.target.value) {
       const newOffers = this._offers.find((offer) => offer.type === evt.target.value);
       this.updateData({
+        type: evt.target.value,
         offers: newOffers.offers,
       });
     }
@@ -406,11 +412,45 @@ export default class PointEdit extends SmartView {
   }
 
   static parseInformationToCondition(information) {
-    return Object.assign({}, information);
+    const checkedOffers = [];
+    for (const offer of information.offers) {
+      checkedOffers.push(
+        Object.assign(
+          {},
+          offer,
+          {
+            isChecked: true,
+          },
+        ),
+      );
+    }
+
+    return Object.assign(
+      {},
+      information,
+      {
+        offers: checkedOffers,
+      },
+    );
   }
 
   static parseConditionToInformation(condition) {
-    condition = Object.assign({}, condition);
+    const checkedOffers = [];
+    for (const offer of condition.offers) {
+      if (offer.isChecked) {
+        checkedOffers.push(offer);
+      }
+      delete offer.isChecked;
+    }
+
+    condition = Object.assign(
+      {},
+      condition,
+      {
+        offers: checkedOffers,
+      },
+    );
+
     return condition;
   }
 }
