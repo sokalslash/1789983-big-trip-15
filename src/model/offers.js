@@ -5,11 +5,9 @@ export default class Offers {
 
   setOffers(offers) {
     this._offers = offers;
-    console.log(this._offers);
   }
 
   getOffers() {
-    console.log(this._offers);
     return this._offers;
   }
 }
