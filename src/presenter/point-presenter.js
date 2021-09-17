@@ -8,6 +8,12 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
 export default class Point {
   constructor(listEventsElement, changeData, changeMode) {
     this._listEventsElement = listEventsElement;
@@ -55,7 +61,8 @@ export default class Point {
     }
 
     if(this._mode === Mode.EDITING) {
-      replace(this._eventEditElement, prevEventEditElement);
+      replace(this._tripEventElement, prevTripEventElement);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevTripEventElement);
@@ -70,6 +77,39 @@ export default class Point {
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._repleceFormEditToPoint();
+    }
+  }
+
+  setViewState(state) {
+    if (this._mode === Mode.DEFAULT) {
+      return;
+    }
+
+    const resetFormState = () => {
+      this._eventEditElement.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._eventEditElement.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this._eventEditElement.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this._tripEventElement.shake(resetFormState);
+        this._eventEditElement.shake(resetFormState);
+        break;
     }
   }
 
@@ -109,7 +149,6 @@ export default class Point {
 
   _handleSubmitFormEditClick(tripEvent) {
     this._changeData(UserAction.UPDATE_POINT, UpdateType.MAJOR, tripEvent);
-    this._repleceFormEditToPoint();
   }
 
   _handleFavoriteClick() {

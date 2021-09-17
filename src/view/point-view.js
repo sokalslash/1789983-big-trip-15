@@ -26,11 +26,11 @@ const EMPTY_EVENT = {
 
 const createOptionForCity = (city) => (`<option value="${city}">${city}</option>`);
 
-const createOfferCheckbox = (offer) => {
+const createOfferCheckbox = (offer, isDisabled) => {
   const wordsForAttribute = offer.title.split(' ').join('-');
   return `<div class="event__available-offers">
   <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${wordsForAttribute}-1" type="checkbox" name="event-offer-${wordsForAttribute}" ${offer.isChecked ? 'checked' : ''}>
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${wordsForAttribute}-1" type="checkbox" name="event-offer-${wordsForAttribute}" ${offer.isChecked ? 'checked' : '' } ${isDisabled ? 'disabled' : ''}>
     <label class="event__offer-label" for="event-offer-${wordsForAttribute}-1">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
@@ -39,9 +39,9 @@ const createOfferCheckbox = (offer) => {
   </div>`;
 } ;
 
-const createEventSectionOffers = (offers) => {
+const createEventSectionOffers = (offers, isDisabled) => {
   if (offers && offers.length !== 0) {
-    const availableOffers = offers.map((offer) => createOfferCheckbox(offer)).join(' ');
+    const availableOffers = offers.map((offer) => createOfferCheckbox(offer, isDisabled)).join(' ');
     return `<section class="event__section  event__section--offers">
     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
     ${availableOffers}
@@ -83,18 +83,10 @@ const createEventSectionDestination = (destination) => {
 };
 
 const createPointEditTemplate = (conditionData, cities) => {
-  const {destination, dateFrom, dateTo, basePrice, offers, type} = conditionData;
+  const {destination, dateFrom, dateTo, basePrice, offers, type, isDisabled, isSaving, isDeleting} = conditionData;
   const listOptionCities = cities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
-  // const checkedOffers = offers.map((offer) => {
-  //   Object.assign(
-  //     {},
-  //     offer,
-  //     {isChecked: true},
-  //   );
-  // });
-  //console.log(conditionData);
   const offersConteiner = createEventSectionOffers(offers);
   const destinationConteiner = createEventSectionDestination(destination);
 
@@ -106,7 +98,7 @@ const createPointEditTemplate = (conditionData, cities) => {
         <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="${type ? pointTypeIcon[type] : 'img/logo.png'}" alt="Event type icon">
       </label>
-      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" >
+      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
       <div class="event__type-list">
         <fieldset class="event__type-group">
@@ -164,7 +156,7 @@ const createPointEditTemplate = (conditionData, cities) => {
       <label class="event__label  event__type-output" for="event-destination-1">
       ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
       <datalist id="destination-list-1">
       ${listOptionCities}
       </datalist>
@@ -172,10 +164,10 @@ const createPointEditTemplate = (conditionData, cities) => {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStart}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateStart}" ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEnd}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateEnd}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -183,11 +175,11 @@ const createPointEditTemplate = (conditionData, cities) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Delete</button>
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+    <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
     <button class="event__rollup-btn" type="button">
     <span class="visually-hidden">Open event</span>
   </button>
@@ -430,6 +422,9 @@ export default class PointEdit extends SmartView {
       information,
       {
         offers: checkedOffers,
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
       },
     );
   }
@@ -450,6 +445,10 @@ export default class PointEdit extends SmartView {
         offers: checkedOffers,
       },
     );
+
+    delete condition.isDisabled;
+    delete condition.isSaving;
+    delete condition.isDeleting;
 
     return condition;
   }

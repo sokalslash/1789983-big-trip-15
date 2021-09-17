@@ -46,13 +46,31 @@ export default class PointNew {
     document.querySelector('.trip-main__event-add-btn').disabled = false;
   }
 
+  setSaving() {
+    this._pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this._pointEditComponent.shake(resetFormState);
+  }
+
   _handleFormSubmit(tripEvent) {
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MAJOR,
       tripEvent,
     );
-    this.destroy();
   }
 
   _handleDeleteClick() {
