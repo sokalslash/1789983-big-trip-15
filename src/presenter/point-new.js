@@ -22,7 +22,7 @@ export default class PointNew {
       return;
     }
 
-    this._pointEditComponent = new PointEditView(destination, offers,cities);
+    this._pointEditComponent = new PointEditView(destination, offers, cities);
     this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
@@ -61,7 +61,6 @@ export default class PointNew {
         isDeleting: false,
       });
     };
-
     this._pointEditComponent.shake(resetFormState);
   }
 
