@@ -56,10 +56,10 @@ const createDestinationDescription = (descriptions) => {
 
 const createDstinationPictures = (pictures) => {
   if (pictures && pictures.length !== 0) {
-    const listImageDestination = pictures.map((element) => createImageDestination(element)).join(' ');
+    const listImagesDestination = pictures.map((element) => createImageDestination(element)).join(' ');
     return `<div class="event__photos-container">
       <div class="event__photos-tape">
-      ${listImageDestination}
+      ${listImagesDestination}
       </div>
     </div>`;
   }

@@ -20,8 +20,8 @@ export default class Point {
     this._changeData = changeData;
     this._changeMode = changeMode;
 
-    this._tripEventElement = null;
-    this._eventEditElement = null;
+    this._tripEventComponent = null;
+    this._eventEditComponent = null;
     this._mode = Mode.DEFAULT;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
@@ -35,33 +35,33 @@ export default class Point {
   init(tripEvent, destinations, offers, cities) {
     this._tripEvent = tripEvent;
 
-    const prevTripEventElement = this._tripEventElement;
-    const prevEventEditElement = this._eventEditElement;
+    const prevTripEventElement = this._tripEventComponent;
+    const prevEventEditElement = this._eventEditComponent;
 
-    this._tripEventElement = new TripEventView(tripEvent);
-    this._eventEditElement = new PointEditView(destinations, offers, cities, tripEvent);
+    this._tripEventComponent = new TripEventView(tripEvent);
+    this._eventEditComponent = new PointEditView(destinations, offers, cities, tripEvent);
 
-    this._tripEventElement.setRollupButtonClickHandler(this._handleRollupButtonPointClick);
+    this._tripEventComponent.setRollupButtonClickHandler(this._handleRollupButtonPointClick);
 
-    this._eventEditElement.setRollupButtonClickHandler(this._handleRollupButtonFormEditClick);
+    this._eventEditComponent.setRollupButtonClickHandler(this._handleRollupButtonFormEditClick);
 
-    this._eventEditElement.setDeleteClickHandler(this._handleDeleteFormEditClick);
+    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteFormEditClick);
 
-    this._eventEditElement.setFormSubmitHandler(this._handleSubmitFormEditClick);
+    this._eventEditComponent.setFormSubmitHandler(this._handleSubmitFormEditClick);
 
-    this._tripEventElement.setClickFavoriteHandler(this._handleFavoriteClick);
+    this._tripEventComponent.setClickFavoriteHandler(this._handleFavoriteClick);
 
     if(prevTripEventElement === null || prevEventEditElement === null) {
-      render(this._listEventsElement, this._tripEventElement, RenderPosition.BEFOREEND);
+      render(this._listEventsElement, this._tripEventComponent, RenderPosition.BEFOREEND);
       return;
     }
 
     if(this._mode === Mode.DEFAULT) {
-      replace(this._tripEventElement, prevTripEventElement);
+      replace(this._tripEventComponent, prevTripEventElement);
     }
 
     if(this._mode === Mode.EDITING) {
-      replace(this._tripEventElement, prevTripEventElement);
+      replace(this._tripEventComponent, prevTripEventElement);
       this._mode = Mode.DEFAULT;
     }
 
@@ -70,8 +70,8 @@ export default class Point {
   }
 
   destroy() {
-    remove(this._tripEventElement);
-    remove(this._eventEditElement);
+    remove(this._tripEventComponent);
+    remove(this._eventEditComponent);
   }
 
   resetView() {
@@ -86,7 +86,7 @@ export default class Point {
     }
 
     const resetFormState = () => {
-      this._eventEditElement.updateData({
+      this._eventEditComponent.updateData({
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
@@ -95,20 +95,19 @@ export default class Point {
 
     switch (state) {
       case State.SAVING:
-        this._eventEditElement.updateData({
+        this._eventEditComponent.updateData({
           isDisabled: true,
           isSaving: true,
         });
         break;
       case State.DELETING:
-        this._eventEditElement.updateData({
+        this._eventEditComponent.updateData({
           isDisabled: true,
           isDeleting: true,
         });
         break;
       case State.ABORTING:
-        this._tripEventElement.shake(resetFormState);
-        this._eventEditElement.shake(resetFormState);
+        this._eventEditComponent.shake(resetFormState);
         break;
     }
   }
@@ -116,20 +115,20 @@ export default class Point {
   _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this._eventEditElement.reset(this._tripEvent);
+      this._eventEditComponent.reset(this._tripEvent);
       this._repleceFormEditToPoint();
     }
   }
 
   _replecePointToFormEdit() {
-    replace(this._eventEditElement, this._tripEventElement);
+    replace(this._eventEditComponent, this._tripEventComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
   }
 
   _repleceFormEditToPoint() {
-    replace(this._tripEventElement, this._eventEditElement);
+    replace(this._tripEventComponent, this._eventEditComponent);
     document.removeEventListener('keydown', this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
   }
@@ -143,7 +142,7 @@ export default class Point {
   }
 
   _handleRollupButtonFormEditClick() {
-    this._eventEditElement.reset(this._tripEvent);
+    this._eventEditComponent.reset(this._tripEvent);
     this._repleceFormEditToPoint();
   }
 

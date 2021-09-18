@@ -82,15 +82,15 @@ const renderMoneyChart = (moneyCtx, points) => {
 };
 
 const renderTypeChart = (typeCtx, points) => {
-  const howManyTypeUsed = typesOfPoints.map((type) => getTypeCount(type, points));
+  const typeUsed = typesOfPoints.map((type) => getTypeCount(type, points));
   typeCtx.height = BAR_HEIGHT * typesOfPoints.length;
 
-  const sortedLabelsWithData = getSortedArrayLabelsWithData(typesOfPoints, howManyTypeUsed);
+  const sortedLabelsWithData = getSortedArrayLabelsWithData(typesOfPoints, typeUsed);
   const sortedTypesOfPoints = [];
-  const sortedHowManyTypeUsed = [];
+  const sortedTypeUsed = [];
   sortedLabelsWithData.forEach((labelWithData) => {
     sortedTypesOfPoints.push(labelWithData.label);
-    sortedHowManyTypeUsed.push(labelWithData.data);
+    sortedTypeUsed.push(labelWithData.data);
   });
 
   return new Chart(typeCtx, {
@@ -99,7 +99,7 @@ const renderTypeChart = (typeCtx, points) => {
     data: {
       labels: sortedTypesOfPoints,
       datasets: [{
-        data: sortedHowManyTypeUsed,
+        data: sortedTypeUsed,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
@@ -164,19 +164,19 @@ const renderTimeChart = (timeCtx, points) => {
   timeCtx.height = BAR_HEIGHT * typesOfPoints.length;
 
   const durationOfpointsForType = pointsForType.map((correspondingPoints) => correspondingPoints.map((point) => getTimeDifference(point.dateTo, point.dateFrom)));
-  const amountDurationOfpointsForType = durationOfpointsForType.map((timePoints) => {
+  const amountDurationOfPointsByType = durationOfpointsForType.map((timePoints) => {
     if (timePoints.length !== 0) {
       return timePoints.reduce((amountTime, pointTime) => amountTime + pointTime, 0);
     }
     return 0;
   });
 
-  const sortedLabelsWithData = getSortedArrayLabelsWithData(typesOfPoints, amountDurationOfpointsForType);
+  const sortedLabelsWithData = getSortedArrayLabelsWithData(typesOfPoints, amountDurationOfPointsByType);
   const sortedTypesOfPoints = [];
-  const sortedAmountDurationOfpointsForType = [];
+  const sortedAmountDurationOfPointsByType = [];
   sortedLabelsWithData.forEach((labelWithData) => {
     sortedTypesOfPoints.push(labelWithData.label);
-    sortedAmountDurationOfpointsForType.push(labelWithData.data);
+    sortedAmountDurationOfPointsByType.push(labelWithData.data);
   });
 
   return new Chart(timeCtx, {
@@ -185,7 +185,7 @@ const renderTimeChart = (timeCtx, points) => {
     data: {
       labels: sortedTypesOfPoints,
       datasets: [{
-        data: sortedAmountDurationOfpointsForType,
+        data: sortedAmountDurationOfPointsByType,
         backgroundColor: '#ffffff',
         hoverBackgroundColor: '#ffffff',
         anchor: 'start',
