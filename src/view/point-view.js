@@ -6,13 +6,7 @@ import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const EMPTY_EVENT = {
   type: '',
-  availableCities: [
-    'Salzburg',
-    'Washington',
-    'Vancouver',
-    'Dubai',
-    'Denver',
-  ],
+  availableCities: [],
   destination: {
     description: '',
     name: '',
@@ -22,6 +16,7 @@ const EMPTY_EVENT = {
   dateFrom: new Date(),
   dateTo: new Date(),
   basePrice: '',
+  isNewPoint: true,
 };
 
 const createOptionForCity = (city) => (`<option value="${city}">${city}</option>`);
@@ -83,7 +78,7 @@ const createEventSectionDestination = (destination) => {
 };
 
 const createPointEditTemplate = (conditionData, cities) => {
-  const {destination, dateFrom, dateTo, basePrice, offers, type, isDisabled, isSaving, isDeleting} = conditionData;
+  const {destination, dateFrom, dateTo, basePrice, offers, type, isDisabled, isSaving, isDeleting, isNewPoint} = conditionData;
   const listOptionCities = cities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
@@ -180,9 +175,9 @@ const createPointEditTemplate = (conditionData, cities) => {
 
     <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
     <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
-    <button class="event__rollup-btn" type="button">
+    <button class="event__rollup-btn" type="button"${isNewPoint ? 'disabled' : ''}>
     <span class="visually-hidden">Open event</span>
-  </button>
+    </button>
   </header>
   <section class="event__details">
     ${offersConteiner}
@@ -417,6 +412,8 @@ export default class PointEdit extends SmartView {
       );
     }
 
+    const isNewPoint = Boolean(information.isNewPoint);
+
     return Object.assign(
       {},
       information,
@@ -425,6 +422,7 @@ export default class PointEdit extends SmartView {
         isDisabled: false,
         isSaving: false,
         isDeleting: false,
+        isNewPoint,
       },
     );
   }
@@ -449,6 +447,7 @@ export default class PointEdit extends SmartView {
     delete condition.isDisabled;
     delete condition.isSaving;
     delete condition.isDeleting;
+    delete condition.isNewPoint;
 
     return condition;
   }

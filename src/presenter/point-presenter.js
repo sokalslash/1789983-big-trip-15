@@ -148,7 +148,7 @@ export default class Point {
   }
 
   _handleSubmitFormEditClick(tripEvent) {
-    this._changeData(UserAction.UPDATE_POINT, UpdateType.MAJOR, tripEvent);
+    this._changeData(UserAction.UPDATE_POINT, UpdateType.MINOR, tripEvent);
   }
 
   _handleFavoriteClick() {

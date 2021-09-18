@@ -71,7 +71,7 @@ const handleSiteMenuClick = (menuItem) => {
         remove(statisticsComponent);
       }
       tripPresenter.destroy();
-      filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
+      filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
       tripPresenter.init(destinationsModel, offersModel);
       tripPresenter.createPoint(handlePointNewFormClose);
       siteMenuComponent.removeMenuItem();
