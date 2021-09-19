@@ -1,5 +1,6 @@
 import SiteMenuView from './view/menu.js';
 import StatisticsView from './view/stats.js';
+import ErrorView from './view/error-message.js';
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import PointsModel from './model/points.js';
@@ -31,12 +32,8 @@ const siteMenuComponent = new SiteMenuView();
 render(siteMenuElement, siteMenuComponent, RenderPosition.BEFOREEND);
 
 const destinationsModel = new DestinationsModel();
-api.getDestinations()
-  .then((detinations) => destinationsModel.setDestinations(detinations));
 
 const offersModel = new OffersModel();
-api.getOffers()
-  .then((offers) => offersModel.setOffers(offers));
 
 const pointsModel = new PointsModel();
 
@@ -61,6 +58,8 @@ api.getPoints()
 const handlePointNewFormClose = () => {
   siteMenuComponent.setMenuItem(MenuItem.POINTS);
 };
+
+let messageErrorComponent = null;
 
 let statisticsComponent = null;
 
@@ -87,9 +86,11 @@ const handleSiteMenuClick = (menuItem) => {
       break;
     case MenuItem.STATISTICS:
       siteMenuComponent.setMenuItem(MenuItem.STATISTICS);
-      tripPresenter.destroy();
-      statisticsComponent = new StatisticsView(pointsModel.getPoints());
-      render(pageBodyElement, statisticsComponent, RenderPosition.BEFOREEND);
+      if (messageErrorComponent === null) {
+        tripPresenter.destroy();
+        statisticsComponent = new StatisticsView(pointsModel.getPoints());
+        render(pageBodyElement, statisticsComponent, RenderPosition.BEFOREEND);
+      }
       break;
   }
 };
@@ -100,3 +101,18 @@ eventAddButtonElement.addEventListener('click', (evt) => {
   evt.preventDefault();
   handleSiteMenuClick(MenuItem.ADD_NEW_POINT);
 });
+
+api.getDestinations()
+  .then((detinations) => destinationsModel.setDestinations(detinations))
+  .catch((error) => {
+    tripPresenter.destroy();
+    if (statisticsComponent !== null) {
+      remove(statisticsComponent);
+    }
+    messageErrorComponent = new ErrorView(error);
+    render(tripEventsElement, messageErrorComponent, RenderPosition.BEFOREEND);
+  });
+
+api.getOffers()
+  .then((offers) => offersModel.setOffers(offers))
+  .catch(() => offersModel.setOffers([]));

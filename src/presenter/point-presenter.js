@@ -35,8 +35,8 @@ export default class Point {
   init(tripEvent, destinations, offers, cities) {
     this._tripEvent = tripEvent;
 
-    const prevTripEventElement = this._tripEventComponent;
-    const prevEventEditElement = this._eventEditComponent;
+    const prevTripEventComponent = this._tripEventComponent;
+    const prevEventEditComponent = this._eventEditComponent;
 
     this._tripEventComponent = new TripEventView(tripEvent);
     this._eventEditComponent = new PointEditView(destinations, offers, cities, tripEvent);
@@ -51,22 +51,22 @@ export default class Point {
 
     this._tripEventComponent.setClickFavoriteHandler(this._handleFavoriteClick);
 
-    if(prevTripEventElement === null || prevEventEditElement === null) {
+    if(prevTripEventComponent === null || prevEventEditComponent === null) {
       render(this._listEventsElement, this._tripEventComponent, RenderPosition.BEFOREEND);
       return;
     }
 
     if(this._mode === Mode.DEFAULT) {
-      replace(this._tripEventComponent, prevTripEventElement);
+      replace(this._tripEventComponent, prevTripEventComponent);
     }
 
     if(this._mode === Mode.EDITING) {
-      replace(this._tripEventComponent, prevTripEventElement);
+      replace(this._tripEventComponent, prevTripEventComponent);
       this._mode = Mode.DEFAULT;
     }
 
-    remove(prevTripEventElement);
-    remove(prevEventEditElement);
+    remove(prevTripEventComponent);
+    remove(prevEventEditComponent);
   }
 
   destroy() {

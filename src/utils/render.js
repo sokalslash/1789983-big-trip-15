@@ -50,6 +50,7 @@ export const replace = (newChild, oldChild) => {
 
 export const remove = (component) => {
   if (!(component instanceof Abstract)) {
+    console.trace();
     throw new Error('Can remove only components');
   }
   component.getElement().remove();

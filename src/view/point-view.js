@@ -79,7 +79,7 @@ const createEventSectionDestination = (destination) => {
 
 const createPointEditTemplate = (conditionData, cities) => {
   const {destination, dateFrom, dateTo, basePrice, offers, type, isDisabled, isSaving, isDeleting, isNewPoint} = conditionData;
-  const listOptionCities = cities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
+  const listOptionCities = (!cities) ? '' : cities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
   const offersConteiner = createEventSectionOffers(offers);
@@ -301,7 +301,7 @@ export default class PointEdit extends SmartView {
       const newOffers = this._offers.find((offer) => offer.type === evt.target.value);
       this.updateData({
         type: evt.target.value,
-        offers: newOffers.offers,
+        offers: (!newOffers) ? [] : newOffers.offers,
       });
     }
   }
@@ -400,16 +400,18 @@ export default class PointEdit extends SmartView {
 
   static parseInformationToCondition(information) {
     const checkedOffers = [];
-    for (const offer of information.offers) {
-      checkedOffers.push(
-        Object.assign(
-          {},
-          offer,
-          {
-            isChecked: true,
-          },
-        ),
-      );
+    if (information.offers) {
+      for (const offer of information.offers) {
+        checkedOffers.push(
+          Object.assign(
+            {},
+            offer,
+            {
+              isChecked: true,
+            },
+          ),
+        );
+      }
     }
 
     const isNewPoint = Boolean(information.isNewPoint);
@@ -429,12 +431,15 @@ export default class PointEdit extends SmartView {
 
   static parseConditionToInformation(condition) {
     const checkedOffers = [];
-    for (const offer of condition.offers) {
-      if (offer.isChecked) {
-        checkedOffers.push(offer);
+    if (condition.offers) {
+      for (const offer of condition.offers) {
+        if (offer.isChecked) {
+          checkedOffers.push(offer);
+        }
+        delete offer.isChecked;
       }
-      delete offer.isChecked;
     }
+
 
     condition = Object.assign(
       {},

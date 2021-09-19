@@ -16,5 +16,6 @@ export default class Destinations {
       const cities = this._destinations.map((destination) => destination.name);
       return cities;
     }
+    return [];
   }
 }

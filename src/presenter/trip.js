@@ -198,8 +198,11 @@ export default class Trip {
     this._pointNewPresenter.destroy();
 
     remove(this._listEventsComponent);
-    remove(this._eventsSortComponent);
     remove(this._loadingComponent);
+
+    if (this._eventsSortComponent !== null) {
+      remove(this._eventsSortComponent);
+    }
 
     if (this._noTripEventsComponent) {
       remove(this._noTripEventsComponent);

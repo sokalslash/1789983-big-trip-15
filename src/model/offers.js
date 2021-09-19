@@ -1,6 +1,6 @@
 export default class Offers {
   constructor() {
-    this._offers = [];
+    this._offers = null;
   }
 
   setOffers(offers) {
