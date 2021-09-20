@@ -1,6 +1,11 @@
 import AbstractView from './abstract.js';
 import {MenuItem} from '../utils/common.js';
 
+const TabItem = {
+  TABLE: 0,
+  STATS: 1,
+};
+
 const createSiteMenuTemplate = () => (`<nav class="trip-controls__trip-tabs  trip-tabs">
 <a class="trip-tabs__btn  trip-tabs__btn--active" href="#">Table</a>
 <a class="trip-tabs__btn" href="#">Stats</a>
@@ -32,12 +37,12 @@ export default class SiteMenu extends AbstractView {
   setMenuItem(menuItem) {
     switch (menuItem) {
       case MenuItem.POINTS:
-        this._tabsItems[1].classList.remove('trip-tabs__btn--active');
-        this._tabsItems[0].classList.add('trip-tabs__btn--active');
+        this._tabsItems[TabItem.STATS].classList.remove('trip-tabs__btn--active');
+        this._tabsItems[TabItem.TABLE].classList.add('trip-tabs__btn--active');
         break;
       case MenuItem.STATISTICS:
-        this._tabsItems[0].classList.remove('trip-tabs__btn--active');
-        this._tabsItems[1].classList.add('trip-tabs__btn--active');
+        this._tabsItems[TabItem.TABLE].classList.remove('trip-tabs__btn--active');
+        this._tabsItems[TabItem.STATS].classList.add('trip-tabs__btn--active');
         break;
     }
   }

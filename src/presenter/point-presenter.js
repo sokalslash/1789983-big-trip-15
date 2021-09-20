@@ -8,14 +8,20 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
+export const State = {
+  SAVING: 'SAVING',
+  DELETING: 'DELETING',
+  ABORTING: 'ABORTING',
+};
+
 export default class Point {
   constructor(listEventsElement, changeData, changeMode) {
     this._listEventsElement = listEventsElement;
     this._changeData = changeData;
     this._changeMode = changeMode;
 
-    this._tripEventElement = null;
-    this._eventEditElement = null;
+    this._tripEventComponent = null;
+    this._eventEditComponent = null;
     this._mode = Mode.DEFAULT;
 
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
@@ -29,42 +35,43 @@ export default class Point {
   init(tripEvent, destinations, offers, cities) {
     this._tripEvent = tripEvent;
 
-    const prevTripEventElement = this._tripEventElement;
-    const prevEventEditElement = this._eventEditElement;
+    const prevTripEventComponent = this._tripEventComponent;
+    const prevEventEditComponent = this._eventEditComponent;
 
-    this._tripEventElement = new TripEventView(tripEvent);
-    this._eventEditElement = new PointEditView(destinations, offers, cities, tripEvent);
+    this._tripEventComponent = new TripEventView(tripEvent);
+    this._eventEditComponent = new PointEditView(destinations, offers, cities, tripEvent);
 
-    this._tripEventElement.setRollupButtonClickHandler(this._handleRollupButtonPointClick);
+    this._tripEventComponent.setRollupButtonClickHandler(this._handleRollupButtonPointClick);
 
-    this._eventEditElement.setRollupButtonClickHandler(this._handleRollupButtonFormEditClick);
+    this._eventEditComponent.setRollupButtonClickHandler(this._handleRollupButtonFormEditClick);
 
-    this._eventEditElement.setDeleteClickHandler(this._handleDeleteFormEditClick);
+    this._eventEditComponent.setDeleteClickHandler(this._handleDeleteFormEditClick);
 
-    this._eventEditElement.setFormSubmitHandler(this._handleSubmitFormEditClick);
+    this._eventEditComponent.setFormSubmitHandler(this._handleSubmitFormEditClick);
 
-    this._tripEventElement.setClickFavoriteHandler(this._handleFavoriteClick);
+    this._tripEventComponent.setClickFavoriteHandler(this._handleFavoriteClick);
 
-    if(prevTripEventElement === null || prevEventEditElement === null) {
-      render(this._listEventsElement, this._tripEventElement, RenderPosition.BEFOREEND);
+    if(prevTripEventComponent === null || prevEventEditComponent === null) {
+      render(this._listEventsElement, this._tripEventComponent, RenderPosition.BEFOREEND);
       return;
     }
 
     if(this._mode === Mode.DEFAULT) {
-      replace(this._tripEventElement, prevTripEventElement);
+      replace(this._tripEventComponent, prevTripEventComponent);
     }
 
     if(this._mode === Mode.EDITING) {
-      replace(this._eventEditElement, prevEventEditElement);
+      replace(this._tripEventComponent, prevTripEventComponent);
+      this._mode = Mode.DEFAULT;
     }
 
-    remove(prevTripEventElement);
-    remove(prevEventEditElement);
+    remove(prevTripEventComponent);
+    remove(prevEventEditComponent);
   }
 
   destroy() {
-    remove(this._tripEventElement);
-    remove(this._eventEditElement);
+    remove(this._tripEventComponent);
+    remove(this._eventEditComponent);
   }
 
   resetView() {
@@ -73,23 +80,55 @@ export default class Point {
     }
   }
 
+  setViewState(state) {
+    if (this._mode === Mode.DEFAULT) {
+      return;
+    }
+
+    const resetFormState = () => {
+      this._eventEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (state) {
+      case State.SAVING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true,
+        });
+        break;
+      case State.DELETING:
+        this._eventEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true,
+        });
+        break;
+      case State.ABORTING:
+        this._eventEditComponent.shake(resetFormState);
+        break;
+    }
+  }
+
   _escKeyDownHandler(evt) {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
-      this._eventEditElement.reset(this._tripEvent);
+      this._eventEditComponent.reset(this._tripEvent);
       this._repleceFormEditToPoint();
     }
   }
 
   _replecePointToFormEdit() {
-    replace(this._eventEditElement, this._tripEventElement);
+    replace(this._eventEditComponent, this._tripEventComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
   }
 
   _repleceFormEditToPoint() {
-    replace(this._tripEventElement, this._eventEditElement);
+    replace(this._tripEventComponent, this._eventEditComponent);
     document.removeEventListener('keydown', this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
   }
@@ -103,13 +142,12 @@ export default class Point {
   }
 
   _handleRollupButtonFormEditClick() {
-    this._eventEditElement.reset(this._tripEvent);
+    this._eventEditComponent.reset(this._tripEvent);
     this._repleceFormEditToPoint();
   }
 
   _handleSubmitFormEditClick(tripEvent) {
     this._changeData(UserAction.UPDATE_POINT, UpdateType.MAJOR, tripEvent);
-    this._repleceFormEditToPoint();
   }
 
   _handleFavoriteClick() {

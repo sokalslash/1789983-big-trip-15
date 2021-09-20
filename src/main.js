@@ -1,18 +1,20 @@
 import SiteMenuView from './view/menu.js';
 import StatisticsView from './view/stats.js';
-import {generatePointTrip} from './mock/point-trip';
-import {getDestinations} from './mock/destination';
-import {getOffers} from './mock/offers.js';
-import {cities} from './mock/available-cities';
+import ErrorView from './view/error-message.js';
 import TripPresenter from './presenter/trip.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import PointsModel from './model/points.js';
 import FilterModel from './model/filter.js';
+import DestinationsModel from './model/destinations.js';
+import OffersModel from './model/offers.js';
 import {MenuItem, UpdateType} from './utils/common.js';
 import {FilterType} from './utils/filter-util.js';
 import {RenderPosition, render, remove} from './utils/render.js';
+import Api from './api.js';
 
-const MOCK_COUNT = 15;
+
+const AUTHORIZATION = 'Basic M23nh1p8HG95lK';
+const ADDRESS = 'https://15.ecmascript.pages.academy/big-trip';
 
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteMenuElement = siteHeaderElement.querySelector('.trip-controls__navigation');
@@ -21,30 +23,43 @@ const tripEventsElement = document.querySelector('.trip-events');
 const eventAddButtonElement = document.querySelector('.trip-main__event-add-btn');
 const pageBodyElement = document.querySelector('.page-body__page-main div[class="page-body__container"]');
 
-const mocksPoints = new Array(MOCK_COUNT).fill(null).map(generatePointTrip);
+eventAddButtonElement.disabled = true;
+
+const api = new Api(ADDRESS, AUTHORIZATION);
 
 const siteMenuComponent = new SiteMenuView();
 
-const mocksDestinations = getDestinations();
-const mocksOffers = getOffers();
-const mocksCities = cities;
+render(siteMenuElement, siteMenuComponent, RenderPosition.BEFOREEND);
+
+const destinationsModel = new DestinationsModel();
+
+const offersModel = new OffersModel();
 
 const pointsModel = new PointsModel();
-pointsModel.setPoints(mocksPoints);
 
 const filterModel = new FilterModel();
 
-render(siteMenuElement, siteMenuComponent, RenderPosition.BEFOREEND);
-
-const tripPresenter = new TripPresenter(tripEventsElement, siteHeaderElement, pointsModel, filterModel);
-tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
+const tripPresenter = new TripPresenter(tripEventsElement, siteHeaderElement, pointsModel, filterModel, api);
+tripPresenter.init(destinationsModel, offersModel);
 
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, pointsModel);
 filterPresenter.init();
 
+api.getPoints()
+  .then((points) => {
+    pointsModel.setPoints(UpdateType.INIT, points);
+    eventAddButtonElement.disabled = false;
+  })
+  .catch(() => {
+    pointsModel.setPoints(UpdateType.INIT, []);
+    eventAddButtonElement.disabled = false;
+  });
+
 const handlePointNewFormClose = () => {
   siteMenuComponent.setMenuItem(MenuItem.POINTS);
 };
+
+let messageErrorComponent = null;
 
 let statisticsComponent = null;
 
@@ -55,8 +70,8 @@ const handleSiteMenuClick = (menuItem) => {
         remove(statisticsComponent);
       }
       tripPresenter.destroy();
-      filterModel.setFilter(UpdateType.MINOR, FilterType.EVERYTHING);
-      tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
+      filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+      tripPresenter.init(destinationsModel, offersModel);
       tripPresenter.createPoint(handlePointNewFormClose);
       siteMenuComponent.removeMenuItem();
       eventAddButtonElement.disabled = true;
@@ -67,13 +82,15 @@ const handleSiteMenuClick = (menuItem) => {
       }
       siteMenuComponent.setMenuItem(MenuItem.POINTS);
       tripPresenter.destroy();
-      tripPresenter.init(mocksDestinations, mocksOffers, mocksCities);
+      tripPresenter.init(destinationsModel, offersModel);
       break;
     case MenuItem.STATISTICS:
       siteMenuComponent.setMenuItem(MenuItem.STATISTICS);
-      tripPresenter.destroy();
-      statisticsComponent = new StatisticsView(pointsModel.getPoints());
-      render(pageBodyElement, statisticsComponent, RenderPosition.BEFOREEND);
+      if (messageErrorComponent === null) {
+        tripPresenter.destroy();
+        statisticsComponent = new StatisticsView(pointsModel.getPoints());
+        render(pageBodyElement, statisticsComponent, RenderPosition.BEFOREEND);
+      }
       break;
   }
 };
@@ -84,3 +101,18 @@ eventAddButtonElement.addEventListener('click', (evt) => {
   evt.preventDefault();
   handleSiteMenuClick(MenuItem.ADD_NEW_POINT);
 });
+
+api.getDestinations()
+  .then((detinations) => destinationsModel.setDestinations(detinations))
+  .catch((error) => {
+    tripPresenter.destroy();
+    if (statisticsComponent !== null) {
+      remove(statisticsComponent);
+    }
+    messageErrorComponent = new ErrorView(error);
+    render(tripEventsElement, messageErrorComponent, RenderPosition.BEFOREEND);
+  });
+
+api.getOffers()
+  .then((offers) => offersModel.setOffers(offers))
+  .catch(() => offersModel.setOffers([]));

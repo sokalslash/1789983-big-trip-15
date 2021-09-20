@@ -1,5 +1,4 @@
 import PointEditView from '../view/point-view.js';
-import {nanoid} from 'nanoid';
 import {remove, render, RenderPosition} from '../utils/render.js';
 import {UserAction, UpdateType} from '../utils/common.js';
 
@@ -23,7 +22,7 @@ export default class PointNew {
       return;
     }
 
-    this._pointEditComponent = new PointEditView(destination, offers,cities);
+    this._pointEditComponent = new PointEditView(destination, offers, cities);
     this._pointEditComponent.setFormSubmitHandler(this._handleFormSubmit);
     this._pointEditComponent.setDeleteClickHandler(this._handleDeleteClick);
 
@@ -47,13 +46,30 @@ export default class PointNew {
     document.querySelector('.trip-main__event-add-btn').disabled = false;
   }
 
+  setSaving() {
+    this._pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this._pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+    this._pointEditComponent.shake(resetFormState);
+  }
+
   _handleFormSubmit(tripEvent) {
     this._changeData(
       UserAction.ADD_POINT,
       UpdateType.MAJOR,
-      Object.assign({id: nanoid()}, tripEvent),
+      tripEvent,
     );
-    this.destroy();
   }
 
   _handleDeleteClick() {

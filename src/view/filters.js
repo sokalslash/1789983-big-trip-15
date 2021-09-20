@@ -10,10 +10,10 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
 };
 
 const createEventsFiltersTemplate = (filtes, currentFilterType) => {
-  const filterItemsTemplate = filtes.map((filter) => createFilterItemTemplate(filter, currentFilterType)).join('');
+  const filterItemsTemplates = filtes.map((filter) => createFilterItemTemplate(filter, currentFilterType)).join('');
 
   return `<form class="trip-filters" action="#" method="get">
-  ${filterItemsTemplate}
+  ${filterItemsTemplates}
 <button class="visually-hidden" type="submit">Accept filter</button>
 </form>`;
 };

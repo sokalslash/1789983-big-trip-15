@@ -14,29 +14,16 @@ const createNameTrip = (tripEvents) => {
      ... &mdash; ${tripEvents[tripEvents.length-1].destination.name}</h1>`;
 };
 
-const getOffersChecked = (availableOffersForPoint) => {
-  if (availableOffersForPoint || availableOffersForPoint.length !== 0) {
-    const offersChecked = availableOffersForPoint.filter((offer) => offer.isChecked);
-    return offersChecked;
-  }
-};
-
 const createTripInfoTemplate = (tripEvents) => {
-  const result = [];
-  for (let i = 0; i < tripEvents.length; i++) {
-    result.push(getOffersChecked(tripEvents[i].offers.offers));
-  }
-  const clearResult = result.filter((element) => element.length !== 0);
-  const allOffersChecked = clearResult.flat();
-  const getCostOffers = () => {
-    if (allOffersChecked.length !== 0) {
-      return allOffersChecked.reduce((accumulator, offer) => accumulator + offer.price, 0);
-    }
-    return 0;
-  };
+  const costAllOffers = tripEvents
+    .map((point) => point.offers)
+    .filter((offers) => offers.length !== 0)
+    .flat()
+    .reduce((accumulator, offer) => accumulator + offer.price, 0);
+
   const tripInfoCost = tripEvents.reduce((accumulator, point) => accumulator + point.basePrice, 0);
-  const costOffers = getCostOffers();
-  const totalTripInfoCost = tripInfoCost + costOffers;
+
+  const totalTripInfoCost = tripInfoCost + costAllOffers;
 
   if (tripEvents.length !== 0) {
     const {dateFrom} = tripEvents[0];
