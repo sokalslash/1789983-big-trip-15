@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 
-const isCurкent = (point) => dayjs().isAfter(dayjs(point.dateFrom), 'D') && dayjs().isBefore(dayjs(point.dateTo), 'D');
+const isCurrent = (point) => dayjs().isAfter(dayjs(point.dateFrom), 'D') && dayjs().isBefore(dayjs(point.dateTo), 'D');
 
-const isFutures = (point) => dayjs().isBefore(dayjs(point.dateFrom), 'D') || dayjs().isSame(dayjs(point.dateFrom), 'D') || isCurкent(point);
+const isFutures = (point) => dayjs().isBefore(dayjs(point.dateFrom), 'D') || dayjs().isSame(dayjs(point.dateFrom), 'D') || isCurrent(point);
 
-const isPast = (point) => dayjs().isAfter(dayjs(point.dateTo), 'D') || isCurкent(point);
+const isPast = (point) => dayjs().isAfter(dayjs(point.dateTo), 'D') || isCurrent(point);
 
 export const FilterType = {
   EVERYTHING: 'everything',
