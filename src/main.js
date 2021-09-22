@@ -116,3 +116,7 @@ api.getDestinations()
 api.getOffers()
   .then((offers) => offersModel.setOffers(offers))
   .catch(() => offersModel.setOffers([]));
+
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
