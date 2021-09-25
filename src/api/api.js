@@ -1,4 +1,4 @@
-import PointsModel from './model/points';
+import PointsModel from '../model/points';
 
 const Method = {
   GET: 'GET',
@@ -11,6 +11,7 @@ const Request = {
   POINTS: 'points',
   DESTINATIONS: 'destinations',
   OFFERS: 'offers',
+  SYNC: 'points/sync',
 };
 
 export default class Api {
@@ -62,6 +63,16 @@ export default class Api {
       url: `${Request.POINTS}/${point.id}`,
       method: Method.DELETE,
     });
+  }
+
+  sync(data) {
+    return this._load({
+      url: `${Request.SYNC}`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    })
+      .then(Api.toJSON);
   }
 
   _load({

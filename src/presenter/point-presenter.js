@@ -1,7 +1,8 @@
 import TripEventView from '../view/event.js';
 import PointEditView from '../view/point-view.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
-import {UserAction, UpdateType, isEscEvent} from '..//utils/common.js';
+import {UserAction, UpdateType, isEscEvent, isOnline} from '..//utils/common.js';
+import {toast} from '../utils/toast.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -134,10 +135,21 @@ export default class Point {
   }
 
   _handleRollupButtonPointClick() {
+    if (!isOnline()) {
+      toast('You can\'t edit point offline');
+      return;
+    }
+
     this._replaceCardToForm();
   }
 
   _handleDeleteFormEditClick(tripEvent) {
+    if (!isOnline()) {
+      toast('You can\'t delete point offline');
+      this._changeData(UserAction.DELETE_POINT, UpdateType.MAJOR, tripEvent);
+      return;
+    }
+
     this._changeData(UserAction.DELETE_POINT, UpdateType.MAJOR, tripEvent);
   }
 
@@ -147,6 +159,12 @@ export default class Point {
   }
 
   _handleSubmitFormEditClick(tripEvent) {
+    if (!isOnline()) {
+      toast('You can\'t save point offline');
+      this._changeData(UserAction.UPDATE_POINT, UpdateType.MAJOR, tripEvent);
+      return;
+    }
+
     this._changeData(UserAction.UPDATE_POINT, UpdateType.MAJOR, tripEvent);
   }
 
