@@ -42,6 +42,10 @@ const destinationsModel = new DestinationsModel();
 
 const offersModel = new OffersModel();
 
+api.getOffers()
+  .then((offers) => offersModel.setOffers(offers))
+  .catch(() => offersModel.setOffers([]));
+
 const pointsModel = new PointsModel();
 
 const filterModel = new FilterModel();
@@ -124,10 +128,6 @@ api.getDestinations()
     messageErrorComponent = new ErrorView(error);
     render(tripEventsElement, messageErrorComponent, RenderPosition.BEFOREEND);
   });
-
-api.getOffers()
-  .then((offers) => offersModel.setOffers(offers))
-  .catch(() => offersModel.setOffers([]));
 
 window.addEventListener('load', () => {
   navigator.serviceWorker.register('/sw.js');

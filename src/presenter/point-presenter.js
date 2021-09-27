@@ -35,6 +35,7 @@ export default class Point {
 
   init(tripEvent, destinations, offers, cities) {
     this._tripEvent = tripEvent;
+    this._offers = offers;
 
     const prevTripEventComponent = this._tripEventComponent;
     const prevEventEditComponent = this._eventEditComponent;
@@ -94,6 +95,14 @@ export default class Point {
       });
     };
 
+    const resetFormStateAndDisabled = () => {
+      this._eventEditComponent.updateData({
+        isDisabled: true,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
     switch (state) {
       case State.SAVING:
         this._eventEditComponent.updateData({
@@ -110,13 +119,16 @@ export default class Point {
       case State.ABORTING:
         this._eventEditComponent.shake(resetFormState);
         break;
+      case State.ABORTING_OFFLINE:
+        this._eventEditComponent.shake(resetFormStateAndDisabled);
+        break;
     }
   }
 
   _escKeyDownHandler(evt) {
     if (isEscEvent(evt)) {
       evt.preventDefault();
-      this._eventEditComponent.reset(this._tripEvent);
+      this._eventEditComponent.reset(this._tripEvent, this._offers);
       this._repleceFormToCard();
     }
   }
@@ -146,7 +158,7 @@ export default class Point {
   _handleDeleteFormEditClick(tripEvent) {
     if (!isOnline()) {
       toast('You can\'t delete point offline');
-      this._changeData(UserAction.DELETE_POINT, UpdateType.MAJOR, tripEvent);
+      this.setViewState(State.ABORTING_OFFLINE);
       return;
     }
 
@@ -154,14 +166,14 @@ export default class Point {
   }
 
   _handleRollupButtonFormEditClick() {
-    this._eventEditComponent.reset(this._tripEvent);
+    this._eventEditComponent.reset(this._tripEvent, this._offers);
     this._repleceFormToCard();
   }
 
   _handleSubmitFormEditClick(tripEvent) {
     if (!isOnline()) {
       toast('You can\'t save point offline');
-      this._changeData(UserAction.UPDATE_POINT, UpdateType.MAJOR, tripEvent);
+      this.setViewState(State.ABORTING_OFFLINE);
       return;
     }
 

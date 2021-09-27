@@ -82,7 +82,7 @@ const createPointEditTemplate = (conditionData, cities) => {
   const listOptionCities = (!cities) ? '' : cities.map((availableCity) => createOptionForCity(availableCity)).join(' ');
   const dateStart = humanizeDateForPoint(dateFrom);
   const dateEnd = humanizeDateForPoint(dateTo);
-  const offersConteiner = createEventSectionOffers(offers);
+  const offersConteiner = createEventSectionOffers(offers, isDisabled);
   const destinationConteiner = createEventSectionDestination(destination);
 
   return `<li class="trip-events__item">
@@ -193,7 +193,7 @@ export default class PointEdit extends SmartView {
     this._destinations = destinations;
     this._offers = offers;
     this._cities = cities;
-    this._conditionData = PointEdit.parseInformationToCondition(tripEvent);
+    this._conditionData = PointEdit.parseInformationToCondition(tripEvent, offers);
     this._datapickerForStart = null;
     this._datapickerForEnd = null;
 
@@ -366,8 +366,8 @@ export default class PointEdit extends SmartView {
     });
   }
 
-  reset(tripEvent) {
-    this.updateData(PointEdit.parseInformationToCondition(tripEvent));
+  reset(tripEvent, offers) {
+    this.updateData(PointEdit.parseInformationToCondition(tripEvent, offers));
   }
 
   restoreHandlers() {
@@ -398,16 +398,17 @@ export default class PointEdit extends SmartView {
     this.getElement().querySelector('form').addEventListener('submit', this._formSubmitHandler);
   }
 
-  static parseInformationToCondition(information) {
+  static parseInformationToCondition(information, offers) {
     const checkedOffers = [];
-    if (information.offers) {
-      for (const offer of information.offers) {
+    if (information.offers && information.offers.length !== 0) {
+      const allOffers = offers.find((offer) => offer.type === information.type);
+      for (const offer of allOffers.offers ) {
         checkedOffers.push(
           Object.assign(
             {},
             offer,
             {
-              isChecked: true,
+              isChecked: information.offers.some((elem) => elem.title === offer.title),
             },
           ),
         );
