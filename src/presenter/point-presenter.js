@@ -1,7 +1,7 @@
 import TripEventView from '../view/event.js';
 import PointEditView from '../view/point-view.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
-import {UserAction, UpdateType} from '..//utils/common.js';
+import {UserAction, UpdateType, isEscEvent} from '..//utils/common.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -76,7 +76,7 @@ export default class Point {
 
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
-      this._repleceFormEditToPoint();
+      this._repleceFormToCard();
     }
   }
 
@@ -113,28 +113,28 @@ export default class Point {
   }
 
   _escKeyDownHandler(evt) {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (isEscEvent(evt)) {
       evt.preventDefault();
       this._eventEditComponent.reset(this._tripEvent);
-      this._repleceFormEditToPoint();
+      this._repleceFormToCard();
     }
   }
 
-  _replecePointToFormEdit() {
+  _replaceCardToForm() {
     replace(this._eventEditComponent, this._tripEventComponent);
     document.addEventListener('keydown', this._escKeyDownHandler);
     this._changeMode();
     this._mode = Mode.EDITING;
   }
 
-  _repleceFormEditToPoint() {
+  _repleceFormToCard() {
     replace(this._tripEventComponent, this._eventEditComponent);
     document.removeEventListener('keydown', this._escKeyDownHandler);
     this._mode = Mode.DEFAULT;
   }
 
   _handleRollupButtonPointClick() {
-    this._replecePointToFormEdit();
+    this._replaceCardToForm();
   }
 
   _handleDeleteFormEditClick(tripEvent) {
@@ -143,7 +143,7 @@ export default class Point {
 
   _handleRollupButtonFormEditClick() {
     this._eventEditComponent.reset(this._tripEvent);
-    this._repleceFormEditToPoint();
+    this._repleceFormToCard();
   }
 
   _handleSubmitFormEditClick(tripEvent) {

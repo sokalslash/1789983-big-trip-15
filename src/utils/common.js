@@ -23,3 +23,4 @@ export const UpdateType = {
   INIT: 'INIT',
 };
 
+export const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
